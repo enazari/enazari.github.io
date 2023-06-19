@@ -77,8 +77,8 @@ By implementing an other idea, we could generate such images that can fool a sof
 
 
 <div class="row">
-    <div class='container' style='max-width: 40%;'>
-    <div class="col-sm mt-3 mt-md-0">
+    <div class='container'>
+    <div class="col-lg-4 col-md-4 col-sm-8 mx-auto">
         {% include figure.html path="assets/img/DodgePersonation/second1.png"  class="img-fluid rounded z-depth-1" %}
     </div>
         </div>
@@ -135,10 +135,10 @@ However, based on preliminary results, it appears that our attempts with this id
 Next, we tried an other idea, that inputs a human face into the system, and generates an image that has the master key propery we want. In the following, I used my face image as the input, and successfully generated an image that can open more than 50% of the locks, effectively acting as a master key:
 
 <div class="row">
-    <div class="col-sm mt-3 mt-md-0">
+    <div class="col-lg-5 col-md-4 col-sm-4 mx-auto">
         {% include figure.html path="assets/img/DodgePersonation/fourth1.png" class="img-fluid rounded z-depth-1" %}
     </div>
-    <div class="col-sm mt-3 mt-md-0">
+    <div class="col-lg-5 col-md-4 col-sm-4 mx-auto">
         {% include figure.html path="assets/img/DodgePersonation/fourth2.png" class="img-fluid rounded z-depth-1" %}
     </div>
 
