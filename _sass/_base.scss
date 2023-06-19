@@ -85,6 +85,11 @@ blockquote {
 
 .card {
   background-color: var(--global-card-bg-color);
+  flex: 1 1 100%;
+    display: flex;
+
+
+
 
   img {
     width: 100%;
@@ -94,16 +99,13 @@ blockquote {
     color: var(--global-text-color);
   }
 
-  .card-item {
-    width: auto;
-    margin-bottom: 10px;
 
-    .row {
-      display: flex;
-      align-items: center;
-    }
-  }
 }
+
+.image-container {
+  padding: 10px;
+}
+
 
 // Citation
 

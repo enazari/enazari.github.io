@@ -1,97 +1,107 @@
-- title: General Information
-  type: map
-  contents:
-    - name: Full Name
-      value: Albert Einstein
-    - name: Date of Birth
-      value: 14th March 1879
-    - name: Languages
-      value: English, German
-
 - title: Education
   type: time_table
   contents:
-    - title: PhD
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1905
+    - title: Master of Computer Science in Applied AI
+      institution: University of Ottawa, Ottawa, Canada
+      year: Jan 2021 - Aug 2023
       description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Federal teaching diploma
-      institution: Eidgenössische Technische Hochschule, Zurich, Switzerland
-      year: 1900
+        - Thesis - Methods to Enhance Predictive and Generative Modeling
+        - GPA 10/10
+    - title: Bachelor of Science in Computer Science
+      institution: Amirkabir University of Technology, Tehran, Iran
+      year: Sep 2014 - Aug 2019
       description:
-        - Description 1.
-        - Description 2.
+        - Thesis - Generating 2D and 3D human stick figure poses using Generative Adversarial Networks(GANs)
+        - Final Two Years' GPA 9.54/10
 
 - title: Experience
   type: time_table
   contents:
-    - title: Professor of Theoretical Physics
-      institution: Institute for Advanced Study, Princeton University
-      year: 1933 - 1955
+    - title: Research Assistant at CyberRange
+      institution: University of Ottawa, Ottawa, Canada
+      year: Jan 2021 - Aug 2023
       description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Visiting Professor
-      institution: California Institute of Technology, Pasadena, California, US
-      year: 1933
+        - Built a system to bypass face verification systems
+          - Improved the current state-of-the-art approach's success rate by 16\% - from 43\% to 58\%
+        - Created a system for training a GAN without requiring human oversight
+          - Efficiently solved ``Is the GAN sufficiently trained?" using a novel algorithm tested on imagery and tabular data
+        - Employed GANs to tackle the class imbalance problem the results of which are published in two papers
+
+    - title: Software Engineer at Armeh Sazeh Co.
+      institution: Armeh Sazeh Co., Tehran, Iran
+      year: 2020 - 2021
       description:
-        - Description 1.
-        - Description 2.
+        - Designed and implemented web-based software to automate the company's processes
+          - I served as a liaison between my team and the client, handling communication, task delegation, requirement gathering and back-end development.
 
-    - title: Director
-      institution: Kaiser Wilhelm Institute for Physics, Berlin, Germany.
-      year: 1917-1933
-
-    - title: Professor of Theoretical Physics
-      institution: Karl-Ferdinand University, Prague, Czechoslovakia
-      year: 1911 - 1917
+    - title: Software Engineer at Armeh Sazeh Co.
+      institution: Armeh Sazeh Co., Tehran, Iran
+      year: 2016
       description:
+        - Designed and implemented Windows-based software to automate the company's processes in C++
 
-    - title: Associate Professor of Theoretical Physics
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1909 - 1911
-
-- title: Open Source Projects
-  type: time_table
+- title: Skills
+  type: nested_list
   contents:
-    - title: <a href="https://github.com/alshedivat/al-folio">al-folio</a>
-      year: 2015-now
-      description: A beautiful, simple, clean, and responsive Jekyll theme for academics.
+    - title: Python 
+      items: 
+        - Tensorflow | Keras | Data structures & algorithms | Numpy | Pandas | scikit-learn | NLP libraries | Matplotlib
+    - title: Other  
+      items:
+        - C++ | SQL | PHP | Laravel | Git | UML 
 
 - title: Honors and Awards
   type: time_table
   contents:
-    - year: 1921
+    - year: Dec 2021
       items: 
-        - Nobel Prize in Physics 
-        - Matteucci Medal
-    - year: 2029
+        - Awarded ``excellent student'' at the University of Ottawa's graduate studies Excellence Ceremony
+    - year: 2020 - 2021
       items: 
-        - Max Planck Medal
+        - Recipient of Vector Scholarship in Artificial Intelligence - $17,500
 
-- title: Academic Interests
-  type: nested_list
+- title: Publications
+  type: time_table
   contents:
-    - title: Topic 1.
+    - year: 2023
       items: 
-        - Description 1.
-        - Description 2.
-    - title: Topic 2.
-      items:
-        - Description 1.
-        - Description 2.
+        - Ehsan Nazari, Paula Branco, Guy-Vincent Jourdan, "One Face to Rule Them All - Generalized Attacks Against Face Cerification Systems", USENIX, 2023 (submitted)
+    - year: 2023
+      items: 
+        - Ehsan Nazari, Paula Branco, Guy-Vincent Jourdan, "AutoGAN - An Automated Human-Out-Of-The-Loop Approach for Training GANs", MDPI, 2023
+    - year: 2021
+      items: 
+        - Ehsan Nazari, Paula Branco, Guy-Vincent Jourdan, "Using CGAN to Deal with Class Imbalance and Small Sample Size in Cybersecurity Problems", PST, 2021.
+    - year: 2021
+      items: 
+        - Ehsan Nazari & Paula Branco, "On Oversampling via Generative Adversarial Networks under Different Data Difficult Factors", PMLR, 2021.
 
-- title: Other Interests
-  type: list
+
+- title: Team Lead and Volunteer
+  type: time_table
   contents:
-    - <u>Hobbies:</u> Hobby 1, Hobby 2, etc.
+    - title: Papers&Snacks
+      institution: Event Creator and Organizer
+      year: Jan 2023 - May 2023
+      description:
+        - Established and orgonized a lecture oriented weekly event for Computer Science graduate students 
+
+    - title: Running Club
+      institution: Co-Event Orgonizer
+      year: Sep 2022 - Present
+      description:
+        - Co-lead a team of 15+ runners for weekly 5K sessions in Ottawa
+
+    - title: UofO's ISAUO club
+      institution: Volunteer
+      year: Sep 2022
+      description:
+        - Tour leader to welcome new students at the University of Ottawa 
+
+
+    - title: Mentorship
+      institution: Volunteer
+      year: 2022 - Present
+      description:
+        - Co-building communities for new students in Ottawa, overseeing groups of 200+ members each 
+

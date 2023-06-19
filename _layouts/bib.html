@@ -138,6 +138,11 @@
           {%- if entry.abstract %}
             <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
           {%- endif %}
+
+          {%- if entry.url %}
+            <a href="{{ entry.url}}" class="btn btn-sm z-depth-0" role="button">Hyper Link</a>
+          {%- endif %}
+
           {%- if entry.arxiv %}
             <a href="http://arxiv.org/abs/{{ entry.arxiv }}" class="btn btn-sm z-depth-0" role="button">arXiv</a>
           {%- endif %}
@@ -147,13 +152,13 @@
           {%- if entry.html %}
             <a href="{{ entry.html }}" class="btn btn-sm z-depth-0" role="button">HTML</a>
           {%- endif %}
-          {%- if entry.pdf %}
+<!--           {%- if entry.pdf %}
             {% if entry.pdf contains '://' -%}
             <a href="{{ entry.pdf }}" class="btn btn-sm z-depth-0" role="button">PDF</a>
             {%- else -%}
             <a href="{{ entry.pdf | prepend: '/assets/pdf/' | relative_url }}" class="btn btn-sm z-depth-0" role="button">PDF</a>
             {%- endif %}
-          {%- endif %}
+          {%- endif %} -->
           {%- if entry.supp %}
             {% if entry.supp contains '://' -%}
             <a href="{{ entry.supp }}" class="btn btn-sm z-depth-0" role="button">Supp</a>
@@ -202,7 +207,7 @@
               {% endif %}
               ></span>
             {%- endif %}
-            {%- if site.badges.dimensions_badge %}
+<!--             {%- if site.badges.dimensions_badge %}
               <span class="__dimensions_badge_embed__"
               {% if entry.doi %}
                 data-doi="{{ entry.doi }}"
@@ -212,7 +217,7 @@
                 data-id="{{ entry.dimensions }}"
               {% endif %}
               data-hide-zero-citations="true" data-style="small_rectangle" data-legend="hover-right" style="margin-bottom: 3px;"></span>
-            {%- endif %}
+            {%- endif %} -->
           </div>
           {%- endif %}
 
@@ -222,6 +227,7 @@
             <p>{{ entry.abstract }}</p>
           </div>
           {%- endif -%}
+
 
           {% if entry.bibtex_show -%}
           <!-- Hidden bibtex block -->

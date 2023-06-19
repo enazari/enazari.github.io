@@ -1,11 +1,11 @@
 ---
 layout: page
-title: projects
+title: Projects
 permalink: /projects/
-description: A growing collection of your cool projects.
+description: Hey, just between you and me, while you can't see all the details yet, I have to say 'One Face to Rule Them All' is definitely my favorite!
 nav: true
-nav_order: 2
-display_categories: [work, fun]
+nav_order: 1
+display_categories: [Ongoing, Published]
 horizontal: false
 ---
 
@@ -27,12 +27,22 @@ horizontal: false
     </div>
   </div>
   {%- else -%}
-  <div class="grid">
+
+
+  <div class="container">
+    <div class="row row-cols-1">
+
     {%- for project in sorted_projects -%}
+
       {% include projects.html %}
+
     {%- endfor %}
+
+    </div>
   </div>
+
   {%- endif -%}
+
   {% endfor %}
 
 {%- else -%}
