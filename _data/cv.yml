@@ -48,7 +48,7 @@
         - Tensorflow | Keras | Data structures & algorithms | Numpy | Pandas | scikit-learn | NLP libraries | Matplotlib
     - title: Other  
       items:
-        - C++ | SQL | PHP | Laravel | Git | UML 
+        - C++ | SQL | PHP | Laravel | Git | SLURM | UML 
 
 - title: Honors and Awards
   type: time_table
