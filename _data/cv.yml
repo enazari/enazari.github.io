@@ -63,15 +63,15 @@
 - title: Publications
   type: time_table
   contents:
+    - year: 2024
+      items: 
+        - Ehsan Nazari, Paula Branco, & Guy-Vincent Jourdan, "One Face to Rule Them All - Generalized Attacks Against Face Cerification Systems", USENIX, 2024 (submitted).
     - year: 2023
       items: 
-        - Ehsan Nazari, Paula Branco, Guy-Vincent Jourdan, "One Face to Rule Them All - Generalized Attacks Against Face Cerification Systems", USENIX, 2023 (submitted)
-    - year: 2023
-      items: 
-        - Ehsan Nazari, Paula Branco, Guy-Vincent Jourdan, "AutoGAN - An Automated Human-Out-Of-The-Loop Approach for Training GANs", MDPI, 2023
+        - Ehsan Nazari, Paula Branco, & Guy-Vincent Jourdan, "AutoGAN - An Automated Human-Out-Of-The-Loop Approach for Training GANs", MDPI, 2023.
     - year: 2021
       items: 
-        - Ehsan Nazari, Paula Branco, Guy-Vincent Jourdan, "Using CGAN to Deal with Class Imbalance and Small Sample Size in Cybersecurity Problems", PST, 2021.
+        - Ehsan Nazari, Paula Branco, & Guy-Vincent Jourdan, "Using CGAN to Deal with Class Imbalance and Small Sample Size in Cybersecurity Problems", PST, 2021.
     - year: 2021
       items: 
         - Ehsan Nazari & Paula Branco, "On Oversampling via Generative Adversarial Networks under Different Data Difficult Factors", PMLR, 2021.
