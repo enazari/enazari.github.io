@@ -198,6 +198,8 @@ blockquote {
 
 .card {
   background-color: var(--global-card-bg-color);
+  flex: 1 1 100%;
+  display: flex;
 }
 .card img {
   width: 100%;
@@ -205,13 +207,9 @@ blockquote {
 .card .card-title {
   color: var(--global-text-color);
 }
-.card .card-item {
-  width: auto;
-  margin-bottom: 10px;
-}
-.card .card-item .row {
-  display: flex;
-  align-items: center;
+
+.image-container {
+  padding: 10px;
 }
 
 .citation,
