@@ -2,7 +2,7 @@
 layout: page
 title: TailorGAN
 description: Generating Infinite-Length Images with a Relatively Small-sized Conditional Generative Adversarial Network Variant
-img: assets/img/TailorGAN/t1.png
+img: assets/img/TailorGAN/t2.png
 importance: 1
 category: Ongoing
 ---
