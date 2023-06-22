@@ -1,6 +1,6 @@
 ---
 layout: page
-title: One Face to Rule Them All
+title: Unlocking Facial Recognition Systems with Master-Key Images
 description: Novel Methods to Attack Face Recognition Systems
 img: assets/img/oneface.png
 importance: 1

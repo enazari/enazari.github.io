@@ -2,7 +2,7 @@
 layout: page
 title: Projects
 permalink: /projects/
-description: Hey, just between you and me, while you can't see all the details yet, I have to say 'One Face to Rule Them All' is definitely my favorite!
+description: Hey, just between you and me, while you can't see all the details yet, I have to say 'Unlocking Facial Recognition Systems with Master-Key Images' is definitely my favorite!
 nav: true
 nav_order: 1
 display_categories: [Ongoing, Published]
