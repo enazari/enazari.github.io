@@ -22,7 +22,7 @@
       year: Jan 2021 - Aug 2023
       description:
         - Built a system to bypass face verification systems
-          - Improved the current state-of-the-art approach's success rate by 16\% - from 43\% to 58\%
+          - Improved the current state-of-the-art approach's success rate by 15% - from 43% to 58%
         - Created a system for training a GAN without requiring human oversight
           - Efficiently solved ``Is the GAN sufficiently trained?" using a novel algorithm tested on imagery and tabular data
         - Employed GANs to tackle the class imbalance problem the results of which are published in two papers
@@ -45,7 +45,7 @@
   contents:
     - title: Python 
       items: 
-        - Tensorflow | Keras | Data structures & algorithms | Numpy | Pandas | scikit-learn | NLP libraries | Matplotlib
+        - Tensorflow | Keras | PyTorch | Data structures & algorithms | Numpy | Pandas | scikit-learn | NLP libraries | Matplotlib
     - title: Other  
       items:
         - C++ | SQL | PHP | Laravel | Git | SLURM | UML 
@@ -68,13 +68,13 @@
     #     - Ehsan Nazari, Paula Branco, & Guy-Vincent Jourdan, "One Face to Rule Them All - Generalized Attacks Against Face Cerification Systems", USENIX, 2024 (submitted).
     - year: 2023
       items: 
-        - Ehsan Nazari, Paula Branco, & Guy-Vincent Jourdan, "AutoGAN - An Automated Human-Out-Of-The-Loop Approach for Training GANs", MDPI, 2023.
+        - Nazari, Ehsan, Paula Branco, and Guy-Vincent Jourdan. "AutoGAN - An Automated Human-Out-of-the-Loop Approach for Training Generative Adversarial Networks." MDPI 11.4 (2023) - 977.
     - year: 2021
       items: 
-        - Ehsan Nazari, Paula Branco, & Guy-Vincent Jourdan, "Using CGAN to Deal with Class Imbalance and Small Sample Size in Cybersecurity Problems", PST, 2021.
+        - Nazari, Ehsan, Paula Branco, and Guy-Vincent Jourdan. "Using cgan to deal with class imbalance and small sample size in cybersecurity problems." 2021 18th International Conference on Privacy, Security and Trust (PST). IEEE, 2021.
     - year: 2021
       items: 
-        - Ehsan Nazari & Paula Branco, "On Oversampling via Generative Adversarial Networks under Different Data Difficult Factors", PMLR, 2021.
+        - Nazari, Ehsan, and Paula Branco. "On oversampling via generative adversarial networks under different data difficulty factors." Third international workshop on learning with imbalanced domains - Theory and applications. PMLR, 2021.
 
 
 - title: Team Lead and Volunteer

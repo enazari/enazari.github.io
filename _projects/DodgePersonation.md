@@ -10,7 +10,7 @@ category: Ongoing
 
 
 
-We have invested a considerable amount of time into this project. Once we have completed all the necessary steps, I will provide a comprehensive update on this page, including project details, core concepts, algorithms, and outcomes. For the time being, I will share both early and recent experiment results.
+We have invested a considerable amount of time into this project. Once we have completed all the necessary steps, I will provide a comprehensive update on this page, including project details, core concepts, algorithms, and outcomes. I will also publicize the code on <a href="https://github.com/enazari" style=" text-decoration: underline;">my GitHub</a>. For the time being, I will share both early and recent experiment results.
 
 
 <h2>Problem Definition</h2>

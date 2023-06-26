@@ -9,7 +9,7 @@ category: Published
 
 
 <h3>Problem Definition</h3>
-This project aims to explore how different factors in imbalanced datasets affect the performance of GAN-based upsampling techniques in both imagery and cybersecurity domains. We investigate the impact of factors like class imbalance, sample size, data dimensionality, and class overlap when using a CGAN architecture for data augmentation in imagery data tests. We conduct experiments using the MNIST image dataset, generating multiple versions with varying difficulty factors for controlled observation. For cybersecurity data, we focus on the influence of class imbalance and sample size.
+This project aims to explore how different factors in imbalanced datasets affect the performance of GAN-based upsampling techniques in both imagery and cybersecurity domains. We investigate the impact of factors like class imbalance, sample size, data dimensionality, and class overlap when using a CGAN architecture for data augmentation in imagery data tests. We conduct experiments using the MNIST image dataset, generating multiple versions with varying difficulty factors for controlled observation. For cybersecurity data, we focus on the influence of class imbalance and sample size. The code for this project is publicly available on <a href="https://github.com/enazari/GAN-upsampling" style=" text-decoration: underline;">my GitHub</a>.
 
 To evaluate the upsampling framework, we use a 5-fold cross-validation process with two settings: the baseline setting and the CGAN-based augmentative setting. We test the CGAN-based framework on MNIST imagery datasets and non-imagery cybersecurity datasets. Additionally, we create different versions of these datasets with varying characteristics for analysis.
 
@@ -92,6 +92,6 @@ The result shown above is the outcome we selected from experiments conducted on 
 </div>
 </div>
 
-<div class='container' >
+<!-- <div class='container' >
  The code for AutoGAN can be found at <a href='https://github.com/enazari/GAN-upsampling-LIDTA21'>https://github.com/enazari/GAN-upsampling-LIDTA21</a>.
-</div>
+</div> -->

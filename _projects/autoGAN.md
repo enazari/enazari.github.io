@@ -9,7 +9,7 @@ category: Published
 
 <h3>Problem Definition</h3>
 
-Training a GAN can be quite complex compared to standard learning algorithms. Unlike optimizing an objective function, GAN training involves a competitive game where one player (the generator) tries to maximize an objective function while the other player (the discriminator) aims to minimize it. This presents a challenge in finding the Nash equilibrium, which is the potential solution to this game. <strong> Determining when to stop training a GAN is also a significant challenge</strong>, as there is no universally accepted criterion. Researchers often rely on visual inspection or quantitative evaluation metrics like Inception Score (IS) and Fréchet Inception Distance (FID). However, these approaches have limitations, such as the subjective nature of visual inspection and the need for pre-trained models for quantitative evaluation. <strong>This project aims to address these challenges and provide an automatic and systematic approach for determining the optimal point to stop GAN training across different data types.</strong>
+Training a GAN can be quite complex compared to standard learning algorithms. Unlike optimizing an objective function, GAN training involves a competitive game where one player (the generator) tries to maximize an objective function while the other player (the discriminator) aims to minimize it. This presents a challenge in finding the Nash equilibrium, which is the potential solution to this game. <strong> Determining when to stop training a GAN is also a significant challenge</strong>, as there is no universally accepted criterion. Researchers often rely on visual inspection or quantitative evaluation metrics like Inception Score (IS) and Fréchet Inception Distance (FID). However, these approaches have limitations, such as the subjective nature of visual inspection and the need for pre-trained models for quantitative evaluation. <strong>This project aims to address these challenges and provide an automatic and systematic approach for determining the optimal point to stop GAN training across different data types.</strong> The code for this project is publicly available on <a href="https://github.com/enazari/autoGAN" style=" text-decoration: underline;">my GitHub</a>.
 
 <h3>The Solution</h3>
 
@@ -65,7 +65,7 @@ To gain a comprehensive understanding of the AutoGAN algorithm and access the ex
 </div>
 </div>
 
-<div class='container' >
+<!-- <div class='container' >
  The code for AutoGAN can be found at <a href='https://github.com/enazari/autoGAN'>https://github.com/enazari/autoGAN</a>.
-</div>
+</div> -->
 
