@@ -48,7 +48,7 @@
         - Tensorflow | Keras | PyTorch | Data structures & algorithms | Numpy | Pandas | scikit-learn | NLP libraries | Matplotlib
     - title: Other  
       items:
-        - C++ | SQL | PHP | Laravel | Git | SLURM | UML 
+        - C++ | SQL | PHP | Laravel | Git | SLURM | Docker | UML 
 
 - title: Honors and Awards
   type: time_table
@@ -63,9 +63,9 @@
 - title: Publications
   type: time_table
   contents:
-    # - year: 2024
-    #   items: 
-    #     - Ehsan Nazari, Paula Branco, & Guy-Vincent Jourdan, "One Face to Rule Them All - Generalized Attacks Against Face Cerification Systems", USENIX, 2024 (submitted).
+    - year: 2024
+      items: 
+        - Nazari, Ehsan, Paula Branco, and Guy-Vincent Jourdan. “Unlocking Facial Recognition Systems with Master-Key Images” (submitted).
     - year: 2023
       items: 
         - Nazari, Ehsan, Paula Branco, and Guy-Vincent Jourdan. "AutoGAN - An Automated Human-Out-of-the-Loop Approach for Training Generative Adversarial Networks." MDPI 11.4 (2023) - 977.
