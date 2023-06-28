@@ -6,7 +6,7 @@ subtitle: ML Researcher @ Cyber Range
 
 profile:
   align: right
-  image: ehsan.jpeg
+  image: ehsan_green.jpg #ehsan.jpeg
   image_circular: false # crops the image to make it circular
   address: #
 
