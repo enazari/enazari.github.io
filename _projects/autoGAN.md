@@ -57,15 +57,6 @@ Exploring the transferability of image-to-image translation techniques to tabula
 
 <h3>The Published Results</h3>
 To gain a comprehensive understanding of the AutoGAN algorithm and access the extensive results from a wide range of experiments, I kindly refer you to our research paper:
-<div class='container' >
-<div class="publications">
 
-  {% bibliography -f {{ site.scholar.bibliography }} -q @*[number=4]* %}
 
-</div>
-</div>
-
-<!-- <div class='container' >
- The code for AutoGAN can be found at <a href='https://github.com/enazari/autoGAN'>https://github.com/enazari/autoGAN</a>.
-</div> -->
 
