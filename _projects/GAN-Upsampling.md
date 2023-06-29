@@ -87,7 +87,7 @@ The result shown above is the outcome we selected from experiments conducted on 
 <div class='container' >
 <div class="publications">
 
-  {% bibliography -f {{ site.scholar.bibliography }} -q @*[y={{1}}]* %}
+  {% bibliography -f {{ site.scholar.bibliography }} -q @*[y=1]* %}
 
 </div>
 </div>

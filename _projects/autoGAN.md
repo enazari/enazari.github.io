@@ -60,7 +60,7 @@ To gain a comprehensive understanding of the AutoGAN algorithm and access the ex
 <div class='container' >
 <div class="publications">
 
-  {% bibliography -f {{ site.scholar.bibliography }} -q @*[number={{4}}]* %}
+  {% bibliography -f {{ site.scholar.bibliography }} -q @*[number=4]* %}
 
 </div>
 </div>
