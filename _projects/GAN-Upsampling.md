@@ -84,3 +84,10 @@ During our project, we faced a challenge related to tabular non-imagery datasets
 
 <h3>The Published Results</h3>
 The result shown above is the outcome we selected from experiments conducted on imagery datasets. We didn't stop there! We also conducted a lot of experiments on Cybersecurity datasets, which are in a tabular format. We were excited to share our findings, so we published the results in two separate papers:
+<div class='container' >
+<div class="publications">
+
+  {% bibliography -f {{ site.scholar.bibliography }} -q @*[y=1]* %}
+
+</div>
+</div>
