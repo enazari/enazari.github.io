@@ -26,4 +26,4 @@ I invite you to explore a collection of intriguing projects I have been persuing
 
 
 
-I am particularly interested in the field of <strong>Deep Learning</strong>, with a focus on<strong> Computer Vision</strong> applications. I am actively seeking opportunities as a <strong>Machine Learning Researcher/Engineer</strong>.
+I am particularly interested in the field of <strong>Deep Learning</strong>. I am actively seeking opportunities as a <strong>Machine Learning Researcher/Engineer</strong>. 
