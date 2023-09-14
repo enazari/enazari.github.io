@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Unlocking Facial Recognition Systems with Master-Key Images
-description: Novel Methods to Attack Face Recognition Systems
+description: Generalized Attacks on Face Verification Systems
 img: assets/img/oneface.png
 importance: 1
 category: Ongoing
@@ -10,7 +10,7 @@ category: Ongoing
 
 
 
-We have invested a considerable amount of time into this project. Once we have completed all the necessary steps, I will provide a comprehensive update on this page, including project details, core concepts, algorithms, and outcomes. I will also publicize the code on <a href="https://github.com/enazari" style=" text-decoration: underline;">my GitHub</a>. For the time being, I will share both early and recent experiment results.
+We have invested a considerable amount of time into this project. Once we have completed all the necessary steps, I will provide a comprehensive update on this page, including project details, core concepts, algorithms, and outcomes. I will also publicize the code on <a href="https://github.com/enazari" style=" text-decoration: underline;">my GitHub</a>. For the time being, here I will share both early and recent experiment results. You can also find the final set of the experiments and results on  <a href="https://arxiv.org/abs/2309.05879" style=" text-decoration: underline;">arXiv:2309.05879</a>
 
 
 <h2>Problem Definition</h2>
@@ -199,5 +199,13 @@ After conducting tests on softmax loss-based neural networks, we applied our met
 </div>
 
 
-We are nearing the completion of this project, and once finished, I will provide comprehensive details of the project along with the corresponding code here.
+<h3>The Full Study on arXiv</h3>
+As I highlighted earlier, I've presented only the preliminary experiment results here. For the complete methodology and final experiments and results, please refer to arXiv:
+<div class='container' >
+<div class="publications">
+
+  {% bibliography -f {{ site.scholar.bibliography }} -q @*[y=6]* %}
+
+</div>
+</div>
 

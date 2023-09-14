@@ -3,9 +3,9 @@
   contents:
     - title: Master of Computer Science in Applied AI
       institution: University of Ottawa, Ottawa, Canada
-      year: Jan 2021 - Aug 2023
+      year: Jan 2021 - Sep 2023
       description:
-        - Thesis - Methods to Enhance Predictive and Generative Modeling
+        - Thesis - Benevolent and Malevolent Adversaries, A Study of GANs and Face Verification Systems
         - GPA 10/10
     - title: Bachelor of Science in Computer Science
       institution: Amirkabir University of Technology, Tehran, Iran
@@ -24,7 +24,7 @@
         - Built a system to bypass face verification systems
           - Improved the current state-of-the-art approach's success rate by 15% - from 43% to 58%
         - Created a system for training a GAN without requiring human oversight
-          - Efficiently solved ``Is the GAN sufficiently trained?" using a novel algorithm tested on imagery and tabular data
+          - Efficiently solved "Is the GAN sufficiently trained?" using a novel algorithm tested on imagery and tabular data
         - Employed GANs to tackle the class imbalance problem the results of which are published in two papers
 
     - title: Software Engineer at Armeh Sazeh Co.
@@ -55,7 +55,7 @@
   contents:
     - year: Dec 2021
       items: 
-        - Awarded ``excellent student'' at the University of Ottawa's graduate studies Excellence Ceremony
+        - Awarded "excellent student" at the University of Ottawa's graduate studies Excellence Ceremony
     - year: 2020 - 2021
       items: 
         - Recipient of Vector Scholarship in Artificial Intelligence - $17,500
@@ -63,9 +63,9 @@
 - title: Publications
   type: time_table
   contents:
-    - year: 2024
+    - year: 2023
       items: 
-        - Nazari, Ehsan, Paula Branco, and Guy-Vincent Jourdan. “Unlocking Facial Recognition Systems with Master-Key Images” (submitted).
+        - Nazari, Ehsan, Paula Branco, and Guy-Vincent Jourdan. "Generalized Attacks on Face Verification Systems" (in submission process).
     - year: 2023
       items: 
         - Nazari, Ehsan, Paula Branco, and Guy-Vincent Jourdan. "AutoGAN - An Automated Human-Out-of-the-Loop Approach for Training Generative Adversarial Networks." MDPI 11.4 (2023) - 977.
