@@ -16,7 +16,7 @@ selected_papers: false # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
 ---
 
-Currently, I am pursuing my Master's degree in Artificial Intelligence at the University of Ottawa at Cyber Range Lab [Graduating in September 2023]. 
+Currently, I am pursuing my Master's degree in Artificial Intelligence at the University of Ottawa at Cyber Range Lab [Graduating in October 2023]. 
 
 
 During my time pursuing a Master's degree, I have had the privilege of working as a research assistant under Professors [Branco](https://uniweb.uottawa.ca/members/4218) and [Jourdan](https://uniweb.uottawa.ca/?lang=en#!/members/203). I enthusiastically have been engaged in multiple Deep Learning projects during this period, with two of them being documented in <a href="{{ '/publications' | relative_url }}" style=" text-decoration: underline;">three papers</a>.
