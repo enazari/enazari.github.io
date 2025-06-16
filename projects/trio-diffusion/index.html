@@ -18,9 +18,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>TailorGAN | Ehsan  Nazari</title>
+    <title>Trio Diffusion | Ehsan  Nazari</title>
     <meta name="author" content="Ehsan  Nazari">
-    <meta name="description" content="Generating Infinite-Length Images with a Relatively Small-sized Conditional Generative Adversarial Network Variant">
+    <meta name="description" content="My Experiment with Infinite Image Generation">
 
 
     <!-- Bootstrap & MDB -->
@@ -45,7 +45,7 @@
     <link rel="shortcut icon" href="/assets/img/e.png">
     
     <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="canonical" href="https://enazari.github.io/projects/tailorGAN/">
+    <link rel="canonical" href="https://enazari.github.io/projects/trio-diffusion/">
 
     <!-- Dark Mode -->
     
@@ -123,217 +123,219 @@
         <div class="post">
 
           <header class="post-header">
-            <h1 class="post-title">TailorGAN</h1>
-            <p class="post-description">Generating Infinite-Length Images with a Relatively Small-sized Conditional Generative Adversarial Network Variant</p>
+            <h1 class="post-title">Trio Diffusion</h1>
+            <p class="post-description">My Experiment with Infinite Image Generation</p>
           </header>
 
           <article>
-            <div class="container" style="background-color: yellow; max-width: 100%;
+            <div class="container" style="background-color: #f8f9fa; max-width: 100%;
    padding: 20px 20px 5px 20px; margin-bottom: 20px;">
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        <figure>
+        <p style="font-style: italic; text-align: center; font-size: 1.1em; margin-bottom: 15px;">
+            "What if I could generate images that go on forever? – seemed like a fun problem to tackle."
+        </p>
+    </div>
+</div>
+</div>
+<div class="row">
+    <div class="container" style="max-width: 100%; margin: 20px auto;">
+        <div class="col-sm mt-3 mt-md-0">
+            <figure>
 
   <picture>
     
 
     <!-- Fallback to the original file -->
-    <img src="/assets/img/tailorGAN/celeba3.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="The initial results on CelebA dataset (trial 2)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+    <img src="/assets/img/trio-diffusion/from_a_chatgpt_generated_image.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Sample infinite generation results" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
 
   </picture>
 
 </figure>
 
+        </div>
     </div>
-
 </div>
 <div class="caption">
-    Initial results of TailorGAN
 </div>
-        </div>
 
-<p>This project is still in its early stages, and I plan to continue it when time permits.</p>
+<p>This project continues my <a href="/projects/tailorGAN/">TailorGAN</a> work but with diffusion models, aiming to generate images of arbitrary size with no real boundaries through auto-regressive patch generation.</p>
 
-<p>My primary goal is to create a GAN model with a simple and compact architecture capable of generating infinitely long images.</p>
+<h2 id="the-basic-idea">The Basic Idea</h2>
 
-<p>Here, I will only include the initial results. Once I achieve satisfactory outcomes, I will update this page with detailed information about the model.</p>
+<p>Standard diffusion models generate fixed-size images. For larger outputs, you’re limited to upscaling or tiling. My approach: generate images piece by piece, auto-regressively, where each new patch conditions on three neighboring patches in an L-shape configuration.</p>
 
-<p><code class="language-plaintext highlighter-rouge">First, a series of tests were conducted on the MNIST dataset:</code></p>
+<p>The model looks at a “trio” of patches (top-left, top-right, bottom-left) and generates the missing bottom-right patch, creating seamless spatial continuity.</p>
+
+<p><strong>Trio Configuration:</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Top-Left]  [Top-Right]
+[Bottom-Left]   [To-Be-Generated]
+</code></pre></div></div>
+
+<h2 id="loss-function-architecture">Loss Function Architecture</h2>
+
+<p>The model uses a <strong>RobustCombinedLoss</strong> with five key components:</p>
+
+<ol>
+  <li>
+<strong>MSE Loss</strong> (welknown) - Base diffusion reconstruction loss</li>
+  <li>
+<strong>Perceptual Loss</strong> (welknown) - VGG-based perceptual similarity</li>
+  <li>
+<strong>LPIPS Loss</strong> (welknown) - Learned perceptual metric</li>
+  <li>
+<strong>Edge Loss</strong> (welknown) - Preserves high-frequency details</li>
+  <li>
+<strong>Boundary Loss</strong> - <strong>added for spatial continuity</strong>
+</li>
+</ol>
+
+<h2 id="boundary-loss-details">Boundary Loss Details</h2>
+
+<p>The Boundary Continuity Loss extracts edge regions from generated patches and compares them to expected boundaries from context patches using both pixel-level MSE and gradient-based MSE (via Sobel filters). This helps reduce visible seams at patch boundaries, though it’s just one piece of the auto-regressive generation puzzle.</p>
+
+<h2 id="early-results">Early Results</h2>
 
 <div class="row">
-    <div class="container" style="max-width: 20%;">
-    <div class="col-sm mt-3 mt-md-0">
-        <figure>
+    <div class="container" style="max-width: 100%; margin: 20px auto;">
+        <div class="col-sm mt-3 mt-md-0">
+            <figure>
 
   <picture>
     
 
     <!-- Fallback to the original file -->
-    <img src="/assets/img/tailorGAN/mnist.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="A sample of MNIST dataset (28x28 pixels)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+    <img src="/assets/img/trio-diffusion/000000578922.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Sample infinite generation results" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
 
   </picture>
 
 </figure>
 
-    </div>
         </div>
-
+    </div>
 </div>
 <div class="caption">
-    A sample of MNIST dataset (28x28 pixels)
-</div>
-
-<p>Initially, I modified a simple fully connected conditional GAN based on my idea and explored various variations using the MNIST dataset.</p>
-
-<p><code class="language-plaintext highlighter-rouge">Below, you will find a set of MNIST zeros, but some of the images are actually generated while the rest are from the MNIST dataset. So far, the results appear to be satisfactory:</code></p>
-
-<div class="row">
-    <div class="container" style="max-width: 100%;">
-    <div class="col-sm mt-3 mt-md-0">
-        <figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/tailorGAN/zeros.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="a portion of the zeros is generated while the remaining part is from the MNIST dataset" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-    </div>
-        </div>
-
-</div>
-<div class="caption">
-     In the image above, a portion of the zeros is generated while the remaining part is from the MNIST dataset.
-</div>
-
-<p><code class="language-plaintext highlighter-rouge">As shown below, the initial attempts at generating infinitely long images did not yield satisfactory results:</code></p>
-
-<div class="row">
-    <div class="container" style="max-width: 100%;">
-    <div class="col-sm mt-3 mt-md-0">
-        <figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/tailorGAN/zeros2.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="The system's ability to generalize beyond a certain threshold appears to be limited, resulting in the generation of nonsensical content." onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-    </div>
-        </div>
-
-</div>
-<div class="caption">
-     The system's ability to generalize beyond a certain threshold appears to be limited, resulting in the generation of nonsensical content.
-</div>
-
-<p><code class="language-plaintext highlighter-rouge">In the subsequent trial with a new modification to the previous model, I obtained unusual yet improved results compared to the previous ones:</code></p>
-
-<div class="row">
-    <div class="container" style="max-width: 100%;">
-    <div class="col-sm mt-3 mt-md-0">
-        <figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/tailorGAN/interesting1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Despite the continued lack of coherence in the results, it is notable that they no longer exhibit a repetitive pattern as observed in the previous test." onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-    </div>
-        </div>
-
-</div>
-<div class="caption">
-     Despite the continued lack of coherence in the results, it is notable that they no longer exhibit a repetitive pattern as observed in the previous test.
-</div>
-
-<p><code class="language-plaintext highlighter-rouge">Next, I applied an other modification of the method to the CelebA dataset:</code></p>
-
-<div class="row">
-    <div class="container" style="max-width: 30%;">
-    <div class="col-sm mt-3 mt-md-0">
-        <figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/tailorGAN/celeba.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="A sample of CelebA dataset (64x64 pixels)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-    </div>
-        </div>
-
-</div>
-<div class="caption">
-    A sample of CelebA dataset (64x64 pixels)
-</div>
-
-<p><code class="language-plaintext highlighter-rouge">Here are some initial results obtained:</code></p>
-
-<div class="row">
-    <div class="container" style="max-width: 100%;">
-    <div class="col-sm mt-3 mt-md-0">
-        <figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/tailorGAN/celeba2.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="The initial results on CelebA dataset (Model A)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-    </div>
-        </div>
-
-</div>
-<div class="caption">
-    The initial results on CelebA dataset (Model A)
+    Example of auto-regressive infinite image generation - showing the patch-based approach in action
 </div>
 
 <div class="row">
-    <div class="container" style="max-width: 100%;">
-    <div class="col-sm mt-3 mt-md-0">
-        <figure>
+    <div class="container" style="max-width: 100%; margin: 20px auto;">
+        <div class="col-sm mt-3 mt-md-0">
+            <figure>
 
   <picture>
     
 
     <!-- Fallback to the original file -->
-    <img src="/assets/img/tailorGAN/celeba3.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="The initial results on CelebA dataset (Model B)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+    <img src="/assets/img/trio-diffusion/000000578922_3.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Sample infinite generation results" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
 
   </picture>
 
 </figure>
 
-    </div>
         </div>
-
+    </div>
 </div>
 <div class="caption">
-    The initial results on CelebA dataset (Model B)
+    Another example run from the same initial margin patches to generate a larger image
 </div>
 
-<p>I plan to address the issues and provide more results in the near future.</p>
+<div class="row">
+    <div class="container" style="max-width: 100%; margin: 20px auto;">
+        <div class="col-sm mt-3 mt-md-0">
+            <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion/000000540502.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Sample infinite generation results" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+        </div>
+    </div>
+</div>
+<div class="caption">
+    Another example run from the different margin patches.
+</div>
+
+<div class="row">
+    <div class="container" style="max-width: 100%; margin: 20px auto;">
+        <div class="col-sm mt-3 mt-md-0">
+            <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion/000000581781.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Sample infinite generation results" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+        </div>
+    </div>
+</div>
+<div class="caption">
+    Yet, another example run from the different margin patches.
+</div>
+
+<div class="row">
+    <div class="container" style="max-width: 100%; margin: 20px auto;">
+        <div class="col-sm mt-3 mt-md-0">
+            <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion/from_a_chatgpt_generated_image.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Sample infinite generation results" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+        </div>
+    </div>
+</div>
+<div class="caption">
+    Example of extending a ChatGPT-generated image.
+</div>
+
+<div class="row">
+    <div class="container" style="max-width: 100%; margin: 20px auto;">
+        <div class="col-sm mt-3 mt-md-0">
+            <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion/from_a_chatgpt_generated_image2.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Sample infinite generation results" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+        </div>
+    </div>
+</div>
+<div class="caption">
+    Second example of extending a ChatGPT-generated image.
+</div>
+
+<p>The current model shows promise with improved local continuity compared to naive tiling. The boundary loss effectively reduces visible seams, though generating complex and realistic objects with long-range coherence remains challenging and requires further experimentation.</p>
+
+<p><strong>Generation Process:</strong></p>
+<ul>
+  <li>Top and left patches of the initial image condition on real images</li>
+  <li>All subsequent patches condition on previously generated content</li>
+  <li>Auto-regressive generation enables theoretically infinite image extension</li>
+</ul>
 
 
           </article>
