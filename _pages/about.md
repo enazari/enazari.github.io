@@ -24,5 +24,5 @@ I obtained my Master's degree in Artificial Intelligence at the University of Ot
 During that time, I had the privilege of working as a research assistant under Professors [Branco](https://uniweb.uottawa.ca/members/4218) and [Jourdan](https://uniweb.uottawa.ca/?lang=en#!/members/203). I enthusiastically had been engaged in multiple Deep Learning projects during this period, with two of them being documented in <a href="{{ '/publications' | relative_url }}" style=" text-decoration: underline;">three papers</a>.
 
 
-I invite you to explore a collection of intriguing projects I had been persuing during my Master's, with a special emphasis on the captivating <strong>Unlocking Facial Recognition Systems with Master-Key Images</strong> project at <a href="{{ '/projects' | relative_url }}" style=" text-decoration: underline;">Projects</a>.
+I invite you to explore a collection of intriguing projects I have been pursuing at <a href="{{ '/projects' | relative_url }}" style=" text-decoration: underline;">Projects</a>.
 
