@@ -2,8 +2,8 @@
 layout: page
 title: Trio Diffusion
 description: My Experiment with Infinite Image Generation
-img: assets/img/trio-diffusion/trio-concept.png
-importance: 2
+img: assets/img/trio-diffusion/from_a_chatgpt_generated_image.png
+importance: 1
 category: Ongoing
 ---
 
