@@ -1,22 +1,11 @@
-- title: Education
-  type: time_table
-  contents:
-    - title: Master of Computer Science in Applied AI
-      institution: University of Ottawa, Ottawa, Canada
-      year: Jan 2021 - Sep 2023
-      description:
-        - Thesis - Benevolent and Malevolent Adversaries, A Study of GANs and Face Verification Systems
-        - GPA 10/10
-    - title: Bachelor of Science in Computer Science
-      institution: Amirkabir University of Technology, Tehran, Iran
-      year: Sep 2014 - Aug 2019
-      description:
-        - Thesis - Generating 2D and 3D human stick figure poses using Generative Adversarial Networks(GANs)
-        - Final Two Years' GPA 9.54/10
-
 - title: Experience
   type: time_table
   contents:
+    - title: Machine Learning Specialist at Pacefactory
+      institution: Pacefactory inc., Oakville, Canada
+      year: Dec 2023 - Present
+      description:
+
     - title: Research Assistant at CyberRange
       institution: University of Ottawa, Ottawa, Canada
       year: Jan 2021 - Sep 2023
@@ -39,6 +28,24 @@
       year: 2016
       description:
         - Designed and implemented Windows-based software to automate the company's processes in C++
+
+
+- title: Education
+  type: time_table
+  contents:
+    - title: Master of Computer Science in Applied AI
+      institution: University of Ottawa, Ottawa, Canada
+      year: Jan 2021 - Nov 2023
+      description:
+        - Thesis - Benevolent and Malevolent Adversaries, A Study of GANs and Face Verification Systems
+        - GPA 10/10
+    - title: Bachelor of Science in Computer Science
+      institution: Amirkabir University of Technology, Tehran, Iran
+      year: Sep 2014 - Aug 2019
+      description:
+        - Thesis - Generating 2D and 3D human stick figure poses using Generative Adversarial Networks(GANs)
+        - Final Two Years' GPA 9.54/10
+
 
 - title: Skills
   type: nested_list
