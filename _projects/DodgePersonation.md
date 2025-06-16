@@ -201,11 +201,11 @@ After conducting tests on softmax loss-based neural networks, we applied our met
 
 <h3>The Full Study on arXiv</h3>
 As I highlighted earlier, I've presented only the preliminary experiment results here. For the complete methodology and final experiments and results, please refer to arXiv:
-<div class='container' >
-<div class="publications">
 
-  {% bibliography -f {{ site.scholar.bibliography }} -q @*[y=6]* %}
-
-</div>
+<div class='container'>
+  <div class="publications">
+    <p><strong>Unlocking Facial Recognition Systems with Master-Key Images</strong><br>
+    <a href="https://arxiv.org/abs/2309.05879" style="text-decoration: underline;">arXiv:2309.05879</a></p>
+  </div>
 </div>
 
