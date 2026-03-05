@@ -20,4 +20,4 @@ At [Pacefactory](https://www.pacefactory.com), I build and deploy visual recogni
 
 I hold a Master's in Applied AI from the University of Ottawa (GPA: 10/10, [Vector Scholarship](https://vectorinstitute.ai/scholarship/) recipient), where my research focused on GANs and adversarial attacks on face recognition systems under Professors [Branco](https://uniweb.uottawa.ca/members/4218) and [Jourdan](https://uniweb.uottawa.ca/?lang=en#!/members/203).
 
-On my own time, I research visual understanding — how deep networks learn, represent, and generate visual content. [Recent project](https://github.com/enazari/ArcFace-vs-InfoNCE).
+On my own time, I research visual understanding — how deep networks learn, represent, and generate visual content. [Recent project](https://github.com/enazari/ArcFace-vs-InfoNCE). I also write about object detection internals on [Medium](https://medium.com/@ehsannazari).
