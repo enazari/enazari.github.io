@@ -73,7 +73,7 @@ In the early attempts, we could generate such images that can fool a soft-max ba
 
 
 <h3>Idea Two</h3>
-By implementing an other idea, we could generate such images that can fool a soft-max based neural network used for Face Verification task with even a higher success rate.
+By implementing another idea, we could generate such images that can fool a soft-max based neural network used for Face Verification task with even a higher success rate.
 
 
 <div class="row">
@@ -89,7 +89,7 @@ By implementing an other idea, we could generate such images that can fool a sof
 </div>
 
 <h3>Idea Two - Incorporating a Different Loss Function</h3>
-By changing the loss function of our model, we generated other nonsensical but instersting images:
+By changing the loss function of our model, we generated other nonsensical but interesting images:
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.html path="assets/img/DodgePersonation/secondc1.png" class="img-fluid rounded z-depth-1" %}
@@ -132,7 +132,7 @@ However, based on preliminary results, it appears that our attempts with this id
 
 
 <h3>Idea Four</h3>
-Next, we tried an other idea, that inputs a human face into the system, and generates an image that has the master key propery we want. In the following, I used my face image as the input, and successfully generated an image that can open more than 50% of the locks, effectively acting as a master key:
+Next, we tried another idea, that inputs a human face into the system, and generates an image that has the master key property we want. In the following, I used my face image as the input, and successfully generated an image that can open more than 50% of the locks, effectively acting as a master key:
 
 <div class="row">
     <div class="col-lg-5 col-md-4 col-sm-4 mx-auto">

@@ -7,7 +7,7 @@ importance: 2
 category: Ongoing
 ---
 
-<div class='container' style='background-color: yellow; max-width: 100%;
+<div class='container' style='background-color: #f8f9fa; max-width: 100%;
    padding: 20px 20px 5px 20px; margin-bottom: 20px;'>
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">

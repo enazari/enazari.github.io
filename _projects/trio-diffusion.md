@@ -46,10 +46,10 @@ The model looks at a "trio" of patches (top-left, top-right, bottom-left) and ge
 
 The model uses a **RobustCombinedLoss** with five key components:
 
-1. **MSE Loss** (welknown) - Base diffusion reconstruction loss
-2. **Perceptual Loss** (welknown) - VGG-based perceptual similarity 
-3. **LPIPS Loss** (welknown) - Learned perceptual metric
-4. **Edge Loss** (welknown) - Preserves high-frequency details
+1. **MSE Loss** (well-known) - Base diffusion reconstruction loss
+2. **Perceptual Loss** (well-known) - VGG-based perceptual similarity 
+3. **LPIPS Loss** (well-known) - Learned perceptual metric
+4. **Edge Loss** (well-known) - Preserves high-frequency details
 5. **Boundary Loss** - **added for spatial continuity**
 
 ## Boundary Loss Details
