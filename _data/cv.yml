@@ -5,6 +5,16 @@
       institution: Pacefactory inc., Oakville, Canada
       year: Dec 2023 - Present
       description:
+        - "Optimized Lightweight Models for Real-Time Computer Vision:"
+        - Built a high-performance XGBoost-based object detection pipeline (Macro Avg 0.92; 100k samples processed in 0.3s)
+        - Developed a lightweight CNN-based sliding window detector for resource-constrained environments
+        - Built object/keypoint detection and semantic segmentation models from raw camera footage
+        - Analyzed capabilities and constraints of Aruco markers for accurate fiducial tracking
+        - Implemented CLIP-based state classification and HDBSCAN clustering for unsupervised category discovery
+        - "Semi-Automatic Annotation Tool Development:"
+        - Built a dockerized Django-based web app integrating XGBoost and YOLO for iterative object annotation
+        - Developed annotation tools using Grounding DINO (text prompts) and Rex-Omni (visual prompts)
+        - Built zero-shot training from SAM masks via multi-view bboxes
 
     - title: Research Assistant at CyberRange
       institution: University of Ottawa, Ottawa, Canada
@@ -50,12 +60,15 @@
 - title: Skills
   type: nested_list
   contents:
-    - title: Python 
-      items: 
-        - Tensorflow | Keras | PyTorch | Data structures & algorithms | Numpy | Pandas | scikit-learn | NLP libraries | Matplotlib
-    - title: Other  
+    - title: Python
       items:
-        - C++ | SQL | PHP | Laravel | Git | SLURM | Docker | UML 
+        - PyTorch | Tensorflow | Numpy | Pandas | scikit-learn | Matplotlib
+    - title: Software Development
+      items:
+        - Git | Docker | GitHub Actions | Django | Laravel | React | UML
+    - title: Other
+      items:
+        - SQL | C++ | PHP | SLURM
 
 - title: Honors and Awards
   type: time_table
