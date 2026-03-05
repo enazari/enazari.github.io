@@ -206,28 +206,6 @@
 [Bottom-Left]   [To-Be-Generated]
 </code></pre></div></div>
 
-<h2 id="loss-function-architecture">Loss Function Architecture</h2>
-
-<p>The model uses a <strong>RobustCombinedLoss</strong> with five key components:</p>
-
-<ol>
-  <li>
-<strong>MSE Loss</strong> (well-known) - Base diffusion reconstruction loss</li>
-  <li>
-<strong>Perceptual Loss</strong> (well-known) - VGG-based perceptual similarity</li>
-  <li>
-<strong>LPIPS Loss</strong> (well-known) - Learned perceptual metric</li>
-  <li>
-<strong>Edge Loss</strong> (well-known) - Preserves high-frequency details</li>
-  <li>
-<strong>Boundary Loss</strong> - <strong>added for spatial continuity</strong>
-</li>
-</ol>
-
-<h2 id="boundary-loss-details">Boundary Loss Details</h2>
-
-<p>The Boundary Continuity Loss extracts edge regions from generated patches and compares them to expected boundaries from context patches using both pixel-level MSE and gradient-based MSE (via Sobel filters). This helps reduce visible seams at patch boundaries, though it’s just one piece of the auto-regressive generation puzzle.</p>
-
 <h2 id="early-results">Early Results</h2>
 
 <div class="row">
