@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+    <!-- Website verification -->
+    <meta name="google-site-verification" content="bXUR7A0NablAs6DUwHXGGxXQYOcxzMlt48DhU76oiv8">
+<!-- Avoid warning on Google Chrome
+        Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'interest-cohort'.
+        see https://stackoverflow.com/a/75119417
+    -->
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+
+    <!-- Standard metadata -->
+    <!-- <meta name="google-site-verification" content="c1_ireMrS6VGlox8sVODWIT69eOUaBySUjgbyIJf7jI" />  -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Trio Diffusion (v2) | Ehsan  Nazari</title>
+    <meta name="author" content="Ehsan  Nazari">
+    <meta name="description" content="Autoregressive infinite image generation with diffusion models — ablations and findings">
+
+    <!-- OpenGraph -->
+    <meta property="og:site_name" content="Ehsan  Nazari">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Ehsan  Nazari | Trio Diffusion (v2)">
+    <meta property="og:url" content="https://enazari.github.io/projects/trio-diffusion-v2/">
+    <meta property="og:description" content="Autoregressive infinite image generation with diffusion models — ablations and findings">
+    
+    <meta property="og:locale" content="en">
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Trio Diffusion (v2)">
+    <meta name="twitter:description" content="Autoregressive infinite image generation with diffusion models — ablations and findings">
+    
+    
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+      {
+        "author":
+        {
+          "@type": "Person",
+          "name": "Ehsan  Nazari"
+        },
+        "url": "https://enazari.github.io/projects/trio-diffusion-v2/",
+        "@type": "WebSite",
+        "description": "Autoregressive infinite image generation with diffusion models — ablations and findings",
+        "headline": "Trio Diffusion (v2)",
+        "sameAs": ["https://scholar.google.com/citations?user=5T9AfA0AAAAJ", "https://github.com/enazari", "https://www.linkedin.com/in/nazari-ehsan", "https://medium.com/@nazari-ehsan"],
+        "name": "Ehsan  Nazari",
+        "@context": "https://schema.org"
+      }
+    </script>
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="/assets/img/e.png">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://enazari.github.io/projects/trio-diffusion-v2/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav sticky-bottom-footer">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Ehsan </span>Nazari</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">About</a>
+              </li>
+              
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/projects/">Projects</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">Publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/cv/">CV</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="container mt-5">
+      
+        <!-- page.html -->
+        <div class="post">
+
+          <header class="post-header">
+            <h1 class="post-title">Trio Diffusion (v2)</h1>
+            <p class="post-description">Autoregressive infinite image generation with diffusion models — ablations and findings</p>
+          </header>
+
+          <article>
+            <div class="container" style="background-color: #f8f9fa; max-width: 100%;
+   padding: 20px 20px 5px 20px; margin-bottom: 20px;">
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/hero_progressive_generated1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Autoregressive infinite image generation" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/hero_clip_progressive_s4.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Autoregressive infinite image generation" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    Generated patch-by-patch from pure noise. No global planner, no fixed canvas.
+</div>
+</div>
+
+<p><strong>At a glance:</strong></p>
+<ul>
+  <li>
+<strong>Problem:</strong> Standard diffusion models generate fixed-size images. Can we grow the canvas indefinitely, one patch at a time?</li>
+  <li>
+<strong>Approach:</strong> Each patch is generated by a diffusion model conditioned on three spatial neighbors (L-shape) and a frozen vision backbone (CLIP or DINOv2). Fully autoregressive, no fixed canvas size.</li>
+  <li>
+<strong>What works:</strong> Locally convincing patches, successful color/texture transfer from seed images, learned position-dependent statistics (sky at top).</li>
+  <li>
+<strong>What doesn’t:</strong> No coherent objects emerge across patches. Five backbone/position-encoding ablations all fail to produce cross-block structure.</li>
+</ul>
+
+<p>Standard diffusion models generate fixed-size images. This project takes a different approach: generate images patch by patch, autoregressively, where each new patch is conditioned on three spatial neighbors in an L-shape: top-left, top-right, bottom-left. The L-shape provides enough local context to generate coherently in any direction (right, down, or diagonally), so the canvas can grow without bound. Trained from scratch on 3,000–10,000 COCO images in pixel space. Builds on a <a href="/projects/trio-diffusion/">previous version</a> that had no global conditioning.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌─────────────┬─────────────┐
+│  TOP LEFT   │  TOP RIGHT  │  Context patches (known)
+├─────────────┼─────────────┤
+│ BOTTOM LEFT │    ????     │  Target patch (generated by diffusion)
+└─────────────┴─────────────┘
+</code></pre></div></div>
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/generation_process.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Autoregressive generation process" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+
+<h2 id="method">Method</h2>
+
+<h3 id="spatial-inpainting">Spatial inpainting</h3>
+
+<p>Each generation step is a 2×2 inpainting problem. The three context patches and the noisy target are tiled into a single spatial block: 3 RGB channels plus a binary mask indicating which quadrants are known. Because the patches sit at their true spatial positions, standard convolutions see across patch borders and learn seamless transitions. Unlike Patch Diffusion (Wang et al., NeurIPS 2023), which uses patches for training efficiency on fixed images, this is fully autoregressive over a potentially unbounded grid.</p>
+
+<h3 id="repaint-conditioning">RePaint conditioning</h3>
+
+<p>At every denoising step, the known regions (TL, TR, BL) are re-noised to their correct noise level and re-injected, providing persistent spatial context throughout the entire reverse process rather than injecting it once and hoping it survives 1,000 denoising steps. This is the key mechanism that keeps neighboring patches “visible” to the model at every step. From RePaint (Lugmayr et al., CVPR 2022).</p>
+
+<h3 id="global-context-via-vision-backbones">Global context via vision backbones</h3>
+
+<p>A frozen vision backbone (CLIP or DINOv2) encodes a broader view of the scene and injects it into every UNet block via cross-attention. The backbone can be driven in two ways: <strong>(1) autoregressive</strong> — re-encode the partial canvas at each generation step; or <strong>(2) seed image</strong> — a fixed embedding from a reference image steers the entire generation. The cross-attention output is gated by a learned <code class="language-plaintext highlighter-rouge">tanh</code> scalar (initialized at 0.5, not zero; zero-init caused a starvation equilibrium where CLIP never received gradients). Classifier-free guidance modulates backbone influence at inference.</p>
+
+<h3 id="training">Training</h3>
+
+<p>The model is a UNet (177M parameters, base channels 96, self-attention at 16×16 and deeper) operating on 64×64 patches in pixel space; no VAE, no latent space. With a step size of 32 and overlapping extraction, even 3,000 COCO images yield a large number of training patches. 1,000 diffusion timesteps with a linear beta schedule. Multi-GPU training via <code class="language-plaintext highlighter-rouge">accelerate</code>.</p>
+
+<h2 id="results">Results</h2>
+
+<h3 id="patch-completion">Patch completion</h3>
+
+<p>During validation, the model receives three ground-truth context patches plus a CLIP embedding and generates the missing bottom-right patch. In each pair below, the left image is the original and the right has 4 patches replaced by model output.</p>
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/comparison_train.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Training image (bear)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/comparison_unseen.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Unseen image (city road)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    Left: Training image (bear). Right: Unseen image (city road). 4 patches are model-generated — can you spot them?
+</div>
+
+<p>Patches are locally convincing: edge continuity, texture, and color match their neighbors even on unseen images. The challenge is chaining them together; each patch is plausible in isolation, but global structure does not emerge.</p>
+
+<h3 id="unbounded-generation">Unbounded generation</h3>
+
+<p>Full autoregressive raster-scan: every patch generated sequentially, each conditioned on previously generated neighbors. Vibrant textures emerge, but no recognizable objects spanning multiple patches.</p>
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/gallery_clip_progressive_s1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="CLIP (10K), seed 1" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/gallery_clip_progressive_s2.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="CLIP (10K), seed 2" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/gallery_clip_progressive_s3.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="CLIP (10K), seed 3" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/gallery_clip_progressive_s4.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="CLIP (10K), seed 4" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    CLIP (10K) — progressive generation from pure noise.
+</div>
+
+<h3 id="color-and-texture-transfer">Color and texture transfer</h3>
+
+<p>When conditioned on a seed image, the backbone successfully transfers color palette and texture to the generated output.</p>
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/seed_leaf.jpg" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Real photo (leaf)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/gallery_dino_seed_leaf.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Generated, DINOv2 (3K)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/seed_blurred.jpg" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Real photo (blurred)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/gallery_dino10k_seed_blurred.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Generated, DINOv2 (10K)" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    Seed images (left) and generated outputs (right). Dark greens and rain-speckled texture both carry through.
+</div>
+
+<h3 id="position-dependent-statistics">Position-dependent statistics</h3>
+
+<p>With the DINOv2 backbone, sky-blue tones consistently appear near the top of umbrella-seeded generations across different random seeds — matching the spatial layout of the original photograph.</p>
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/seed_umbrella.jpg" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Real photo" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/gallery_dino_seed_umbrella_s1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="DINOv2 (3K), seed 1" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/gallery_dino_seed_umbrella_s2.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="DINOv2 (3K), seed 2" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/gallery_dino_large_seed_umbrella_s1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="DINOv2 (10K), seed 1" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    The model has learned that sky belongs at the top — position-dependent statistics emerge from the combination of positional encoding and backbone conditioning.
+</div>
+
+<h2 id="ablation-systematic-experiment-summary">Ablation: systematic experiment summary</h2>
+
+<p>The <a href="/projects/trio-diffusion/">previous version</a> had no global conditioning at all. In this version, I systematically tested whether vision backbones and positional encoding could give the model a sense of broader scene structure. Five configurations, all trained for 475+ epochs on the same data:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Config</th>
+      <th>Backbone</th>
+      <th>Data</th>
+      <th>Pos. Enc.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">clip_10k</code></td>
+      <td>CLIP ViT-B/32 (frozen)</td>
+      <td>10K</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">dino_3k</code></td>
+      <td>DINOv2 ViT-B/14 (frozen)</td>
+      <td>3K</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">dino_10k</code></td>
+      <td>DINOv2 ViT-B/14 (frozen)</td>
+      <td>10K</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">no_backbone_3k</code></td>
+      <td>None</td>
+      <td>3K</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">no_backbone_no_position_encoding_3k</code></td>
+      <td>None</td>
+      <td>3K</td>
+      <td>No</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Position encoding alone does nothing.</strong> <code class="language-plaintext highlighter-rouge">no_backbone_3k</code> and <code class="language-plaintext highlighter-rouge">no_backbone_no_position_encoding_3k</code> produce identical results; without a global signal, positional encoding has no effect.</p>
+
+<p><strong>Backbone injection provides context but not structure.</strong> CLIP and DINOv2 successfully transfer color palette, texture, and position-dependent statistics, but coherent objects never emerge across patch boundaries.</p>
+
+<p><strong>More data doesn’t help.</strong> <code class="language-plaintext highlighter-rouge">dino_3k</code> and <code class="language-plaintext highlighter-rouge">dino_10k</code> show no difference — the bottleneck is architectural, not data-limited.</p>
+
+<p>The backbone embeddings encode high-level semantics (scene type, dominant color) but not the spatial layout information needed to coordinate structure across patch boundaries. The cross-attention gates learn to use backbone features (gate values settle around 0.3–0.5), but the features themselves lack the spatial resolution to guide local patch decisions.</p>
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/negative_nopos_none_s1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="No backbone, no pos. enc., seed 1" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/negative_nopos_none_s2.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="No backbone, no pos. enc., seed 2" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    Without any global conditioning — incoherent texture soup. Each patch is plausible in isolation but adjacent patches jump between unrelated textures.
+</div>
+
+<h2 id="what-didnt-work">What didn’t work</h2>
+
+<h3 id="clip-text-conditioning">CLIP text conditioning</h3>
+
+<p>CLIP’s text encoder can drive the cross-attention pathway instead of an image encoder. In theory, a text prompt like “blue” or “red” should steer the output. In practice, the model ignores text embeddings entirely — “blue”, “red”, and “cat” produce nearly identical outputs.</p>
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/negative_text_blue.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Text: blue" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/negative_text_red.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Text: red" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/trio-diffusion-v2/negative_text_cat.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Text: cat" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    Prompts "blue", "red", "cat" — identical outputs. CLIP text embeddings are out-of-distribution for the learned cross-attention gates.
+</div>
+
+<p>The cross-attention pathway learns from image embeddings during training. CLIP text embeddings occupy a different region of the shared embedding space — close enough in CLIP’s contrastive sense, but too far out-of-distribution for the learned cross-attention gates to act on.</p>
+
+<h2 id="open-questions">Open questions</h2>
+
+<h3 id="1-why-are-patch-boundaries-still-visible">1. Why are patch boundaries still visible?</h3>
+
+<p>The trio context gives each patch three immediate neighbors, and RePaint conditioning re-injects them at every denoising step. Yet seam artifacts persist. Possible directions:</p>
+<ul>
+  <li>
+<strong>Overlapping patches with blending</strong> — generate patches with overlap and blend the overlapping regions.</li>
+  <li>
+<strong>Boundary continuity loss</strong> — an explicit loss on patch edges (as attempted in the <a href="/projects/trio-diffusion/">previous version</a>), possibly with stronger formulations (adversarial boundary discriminator, perceptual loss at edges).</li>
+</ul>
+
+<h3 id="2-why-dont-coherent-objects-emerge-across-multiple-patches">2. Why don’t coherent objects emerge across multiple patches?</h3>
+
+<p>The model generates plausible textures and learns position-dependent color statistics, but never forms recognizable structures that span more than one patch. Possible directions:</p>
+<ul>
+  <li>
+<strong>Hierarchical latent planning</strong> — generate a coarse low-resolution layout first, then condition each patch on its corresponding region.</li>
+  <li>
+<strong>Multi-scale context windows</strong> — feed the model a downsampled view of the full canvas generated so far, in addition to the three high-resolution neighbor patches.</li>
+</ul>
+
+<p>Code: <a href="https://github.com/enazari/Trio-Diffusion" rel="external nofollow noopener" target="_blank">github.com/enazari/Trio-Diffusion</a></p>
+
+          </article>
+
+        </div>
+
+      
+    </div>
+
+    <!-- Footer -->    <footer class="sticky-bottom mt-5">
+      <div class="container">
+        © Copyright 2026 Ehsan  Nazari. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme.
+
+      </div>
+    </footer>
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+    
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js"></script>
+
+  <!-- Bootstrap Table -->
+  <script defer src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+
+  <!-- Load Common JS -->
+  <script src="/assets/js/no_defer.js"></script>
+  <script defer src="/assets/js/common.js"></script>
+  <script defer src="/assets/js/copy_code.js" type="text/javascript"></script>
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>
