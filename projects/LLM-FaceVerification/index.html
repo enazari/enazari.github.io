@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+    <!-- Website verification -->
+    <meta name="google-site-verification" content="bXUR7A0NablAs6DUwHXGGxXQYOcxzMlt48DhU76oiv8">
+<!-- Avoid warning on Google Chrome
+        Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'interest-cohort'.
+        see https://stackoverflow.com/a/75119417
+    -->
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+
+    <!-- Standard metadata -->
+    <!-- <meta name="google-site-verification" content="c1_ireMrS6VGlox8sVODWIT69eOUaBySUjgbyIJf7jI" />  -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Face Verification: LoRA-Tuning a Multimodal LLM | Ehsan  Nazari</title>
+    <meta name="author" content="Ehsan  Nazari">
+    <meta name="description" content="Can a 2B-parameter multimodal LLM match a ResNet-50 trained from scratch?">
+
+    <!-- OpenGraph -->
+    <meta property="og:site_name" content="Ehsan  Nazari">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Ehsan  Nazari | Face Verification: LoRA-Tuning a Multimodal LLM">
+    <meta property="og:url" content="https://enazari.github.io/projects/LLM-FaceVerification/">
+    <meta property="og:description" content="Can a 2B-parameter multimodal LLM match a ResNet-50 trained from scratch?">
+    
+    <meta property="og:locale" content="en">
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Face Verification: LoRA-Tuning a Multimodal LLM">
+    <meta name="twitter:description" content="Can a 2B-parameter multimodal LLM match a ResNet-50 trained from scratch?">
+    
+    
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+      {
+        "author":
+        {
+          "@type": "Person",
+          "name": "Ehsan  Nazari"
+        },
+        "url": "https://enazari.github.io/projects/LLM-FaceVerification/",
+        "@type": "WebSite",
+        "description": "Can a 2B-parameter multimodal LLM match a ResNet-50 trained from scratch?",
+        "headline": "Face Verification: LoRA-Tuning a Multimodal LLM",
+        "sameAs": ["https://scholar.google.com/citations?user=5T9AfA0AAAAJ", "https://github.com/enazari", "https://www.linkedin.com/in/nazari-ehsan", "https://medium.com/@nazari-ehsan"],
+        "name": "Ehsan  Nazari",
+        "@context": "https://schema.org"
+      }
+    </script>
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="/assets/img/e.png">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://enazari.github.io/projects/LLM-FaceVerification/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav sticky-bottom-footer">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Ehsan </span>Nazari</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">About</a>
+              </li>
+              
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/projects/">Projects</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">Publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/cv/">CV</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="container mt-5">
+      
+        <!-- page.html -->
+        <div class="post">
+
+          <header class="post-header">
+            <h1 class="post-title">Face Verification: LoRA-Tuning a Multimodal LLM</h1>
+            <p class="post-description">Can a 2B-parameter multimodal LLM match a ResNet-50 trained from scratch?</p>
+          </header>
+
+          <article>
+            <div class="container" style="background-color: #f8f9fa; max-width: 100%;
+   padding: 20px 20px 5px 20px; margin-bottom: 20px;">
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/LLM-FaceVerification/diagram_hero.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="InternVL2-2B overview" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    Comparing a vision-only encoder, full multimodal embeddings, and pairwise LLM prompting under the same training and evaluation setup.
+</div>
+</div>
+
+<div class="container" style="max-width: 100%; margin-bottom: 20px;">
+<div class="row">
+    <div class="col-sm-6 mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/LLM-FaceVerification/diagram_baseline.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm-6 mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/LLM-FaceVerification/diagram_vit.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-6 mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/LLM-FaceVerification/diagram_mllm.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+    <div class="col-sm-6 mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/LLM-FaceVerification/diagram_pairwise.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    Three ways to extract face identity from a 2-billion-parameter multimodal model. None beat a ResNet-50 trained from scratch.
+</div>
+</div>
+
+<p>Builds on a <a href="/projects/ArcFace-vs-InfoNCE/">previous project</a> that established InfoNCE and ArcFace baselines on the same data and evaluation protocol.</p>
+
+<p><strong>Key findings:</strong></p>
+<ul>
+  <li>In this setting, multimodal LLMs do not match task-specific encoders for face verification, even after parameter-efficient finetuning.</li>
+  <li>The limitation appears to be architectural: despite contrastive finetuning, identity information may be degraded by the multimodal pipeline and is difficult to fully recover from representations pretrained for language modeling.</li>
+  <li>Language fusion tends to reduce identity signal: adding the LLM slightly underperforms a vision-only encoder in our experiments.</li>
+  <li>CNN baselines remain strong: a ResNet-50 trained from scratch matches or slightly exceeds all 2B-parameter MLLM variants evaluated here.</li>
+</ul>
+
+<h2 id="results">Results</h2>
+
+<p>All models trained on MS1M-ArcFace (85K identities), evaluated with 10-fold cross-validation at FAR@0.001.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Experiment</th>
+      <th>Loss</th>
+      <th>LFW</th>
+      <th>CFP-FF</th>
+      <th>CFP-FP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>ResNet-50 — baseline</strong></td>
+      <td><strong>InfoNCE</strong></td>
+      <td><strong>99.55%</strong></td>
+      <td><strong>99.59%</strong></td>
+      <td><strong>87.87%</strong></td>
+    </tr>
+    <tr>
+      <td>InternViT-300M (frozen)</td>
+      <td>InfoNCE</td>
+      <td>66.12%</td>
+      <td>54.34%</td>
+      <td>51.76%</td>
+    </tr>
+    <tr>
+      <td><strong>InternViT-300M + LoRA</strong></td>
+      <td><strong>InfoNCE</strong></td>
+      <td><strong>99.02%</strong></td>
+      <td><strong>97.60%</strong></td>
+      <td><strong>87.07%</strong></td>
+    </tr>
+    <tr>
+      <td>InternVL2-2B (frozen)</td>
+      <td>InfoNCE</td>
+      <td>60.12%</td>
+      <td>53.17%</td>
+      <td>50.86%</td>
+    </tr>
+    <tr>
+      <td><strong>InternVL2-2B + LoRA</strong></td>
+      <td><strong>InfoNCE</strong></td>
+      <td><strong>98.68%</strong></td>
+      <td><strong>98.09%</strong></td>
+      <td><strong>84.20%</strong></td>
+    </tr>
+    <tr>
+      <td>InternVL2-2B pairwise (frozen)</td>
+      <td>Cross-entropy</td>
+      <td>50.00%</td>
+      <td>50.40%</td>
+      <td>50.03%</td>
+    </tr>
+    <tr>
+      <td>InternVL2-2B pairwise + LoRA</td>
+      <td>Cross-entropy</td>
+      <td>73.03%</td>
+      <td>65.77%</td>
+      <td>56.56%</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="infonce-loss">InfoNCE loss</h3>
+
+<div class="container" style="max-width: 500px; margin: 0 auto 20px auto;">
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/LLM-FaceVerification/infonce_pairs.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="InfoNCE pairwise similarity matrix" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+</div>
+
+<p>Each batch contains P identity pairs (2 images per identity). InfoNCE maximizes cosine similarity between partners while pushing apart the 2P−2 non-partner images, using temperature-scaled softmax over the similarity matrix. All MLLM experiments in this project use InfoNCE (\(\tau\)=0.07). The same ResNet-50 baseline trained with ArcFace loss reaches 99.72% LFW / 95.84% CFP-FP — see the <a href="/projects/ArcFace-vs-InfoNCE/">ArcFace vs InfoNCE project</a> for an extended comparison of loss functions on the same backbone and data.</p>
+
+<h3 id="scenario-1-how-much-face-identity-signal-is-already-present-in-the-vision-encoder-of-a-pretrained-multimodal-model-and-how-far-can-parameter-efficient-finetuning-push-it-for-verification">Scenario 1: How much face-identity signal is already present in the vision encoder of a pretrained multimodal model, and how far can parameter-efficient finetuning push it for verification?</h3>
+
+<p>The ViT was pretrained jointly with the LLM on multimodal data — not faces. Frozen, it scores 66% on LFW (near chance). But rank-8 LoRA adapters on just the FFN layers (<code class="language-plaintext highlighter-rouge">fc1</code>, <code class="language-plaintext highlighter-rouge">fc2</code>) lift it to 99.02% on LFW and 87.07% on CFP-FP — nearly matching the ResNet-50 baseline (99.55% / 87.87%) — by training only 1.97M parameters (0.64% of the model). The raw signal is weak, but the representation is highly adaptable. Adapters are kept in float32 while the 306M base stays frozen in fp16 — without this, optimizer states for small rank-8 matrices can accumulate rounding errors that may stall training.</p>
+
+<h3 id="scenario-2-does-the-language-stack-in-a-multimodal-llm-improve-identity-discriminative-visual-representations-for-face-verification">Scenario 2: Does the language stack in a multimodal LLM improve identity-discriminative visual representations for face verification?</h3>
+
+<p>It dilutes them. InternVL2-2B + LoRA (full MLLM) slightly <em>underperforms</em> InternViT + LoRA (ViT only) — 98.68% vs 99.02% on LFW, 84.20% vs 87.07% on CFP-FP. I think this comes down to two things. First, the pipeline between ViT and LLM is lossy: pixel unshuffle reduces 1,024 visual tokens to 256, and the MLP projector was trained to align visual tokens with language tokens for captioning — not to preserve identity-discriminative spatial information. The ViT alone retains more of what faces need. Second, the LLM’s hidden states are shaped by a next-token prediction objective, not by metric learning — pooling them into a face embedding repurposes a representation that was never designed for pairwise similarity.</p>
+
+<h3 id="scenario-3-can-the-llms-internally-fused-representation-of-two-face-images-improve-verification-over-independently-encoded-embeddings-and-a-downstream-similarity-metric">Scenario 3: Can the LLM’s internally fused representation of two face images improve verification over independently encoded embeddings and a downstream similarity metric?</h3>
+
+<p>No. Prompting the MLLM with two images and “Do these two images show the same person?” is the most natural use of an LLM for verification. It is also the worst. Even with LoRA, it reaches only 73% on LFW and 57% on CFP-FP. Cross-entropy over two tokens (Yes/No) provides a much weaker training signal than InfoNCE over a batch of 2P negatives — the model must simultaneously learn identity similarity <em>and</em> verbalize it through a single token.</p>
+
+<h3 id="the-baseline-still-wins">The baseline still wins</h3>
+
+<p>A ResNet-50 with 7–50× fewer parameters, no pretraining on billions of image-text pairs, and the same InfoNCE loss matches or beats every MLLM configuration. On CFP-FP: 87.87% vs 87.07% for InternViT + LoRA and 84.20% for InternVL2-2B + LoRA.</p>
+
+<h3 id="lora-configuration">LoRA configuration</h3>
+
+<p>All LoRA experiments use rank 8, \(\alpha\)=8 (scaling factor 1.0). Adapters are kept in float32 for numerical stability; the frozen base stays in fp16.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>Total params</th>
+      <th>LoRA params</th>
+      <th>Trainable</th>
+      <th>Adapters</th>
+      <th>Targets</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>InternViT-300M</td>
+      <td>305,978,368</td>
+      <td>1,966,080</td>
+      <td>0.64%</td>
+      <td>48</td>
+      <td>
+<code class="language-plaintext highlighter-rouge">fc1</code>, <code class="language-plaintext highlighter-rouge">fc2</code> (ViT FFN)</td>
+    </tr>
+    <tr>
+      <td>InternVL2-2B</td>
+      <td>2,213,618,688</td>
+      <td>7,864,320</td>
+      <td>0.36%</td>
+      <td>120</td>
+      <td>
+<code class="language-plaintext highlighter-rouge">fc1</code>, <code class="language-plaintext highlighter-rouge">fc2</code> (ViT FFN) + <code class="language-plaintext highlighter-rouge">w1</code>, <code class="language-plaintext highlighter-rouge">w2</code>, <code class="language-plaintext highlighter-rouge">w3</code> (LLM FFN)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="ablation-pooling-strategy">Ablation: pooling strategy</h3>
+
+<p>For the full MLLM (Scenario 2), the LLM produces a sequence of hidden states. Using the same trained checkpoint, I evaluated three pooling strategies post-hoc — no retraining, just different aggregations:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Pooling</th>
+      <th>LFW</th>
+      <th>CFP-FF</th>
+      <th>CFP-FP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<strong>visual_mean</strong> (default)</td>
+      <td><strong>98.68%</strong></td>
+      <td><strong>98.09%</strong></td>
+      <td><strong>84.20%</strong></td>
+    </tr>
+    <tr>
+      <td>all_mean</td>
+      <td>98.67%</td>
+      <td>98.14%</td>
+      <td>84.40%</td>
+    </tr>
+    <tr>
+      <td>last_token</td>
+      <td>94.20%</td>
+      <td>94.97%</td>
+      <td>76.73%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Visual-only and all-sequence pooling perform nearly identically — the prompt tokens contribute little. Last-token drops 4–7 points because the final token’s representation is shaped by next-token prediction, not identity accumulation.</p>
+
+<h2 id="three-experimental-scenarios">Three experimental scenarios</h2>
+
+<h3 id="scenario-1-vision-encoder-only">Scenario 1: Vision encoder only</h3>
+
+<div class="container" style="max-width: 100%; margin-bottom: 20px;">
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/LLM-FaceVerification/diagram_vit.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Scenario 1: ViT encoder" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+</div>
+
+<p>Extract InternViT-300M from InternVL2-2B and use it as a standalone face encoder. Each image passes through the ViT; mean-pooled patch embeddings form a 1024-d face representation, trained with InfoNCE loss.</p>
+
+<h3 id="scenario-2-full-mllm-embeddings">Scenario 2: Full MLLM embeddings</h3>
+
+<div class="container" style="max-width: 100%; margin-bottom: 20px;">
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/LLM-FaceVerification/diagram_mllm.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Scenario 2: Full MLLM" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+</div>
+
+<p>Feed each image through the complete pipeline: ViT → pixel unshuffle → MLP projector → LLM, with the prompt <em>“Describe this person’s facial features for identification.”</em> The LLM’s visual token hidden states are mean-pooled into a 2048-d embedding, trained with InfoNCE loss.</p>
+
+<h3 id="scenario-3-pairwise-yesno-classifier">Scenario 3: Pairwise yes/no classifier</h3>
+
+<div class="container" style="max-width: 100%; margin-bottom: 20px;">
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/LLM-FaceVerification/diagram_pairwise.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="Scenario 3: Pairwise classifier" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+</div>
+
+<p>Feed both images into a single forward pass with <em>“Do these two images show the same person? Answer Yes or No.”</em> P(Yes) serves as the verification score, trained with cross-entropy over the Yes/No token IDs.</p>
+
+<p>Each scenario is tested frozen and LoRA-finetuned. Scenarios 1 &amp; 2 use InfoNCE (\(\tau\)=0.07); Scenario 3 uses cross-entropy. The ResNet-50 + InfoNCE baseline uses the same loss and data.</p>
+
+<h2 id="architecture">Architecture</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>InternVL2-2B (2.1B params)
+├── InternViT-300M          (304M params, 24 layers)
+│   └── LoRA on fc1, fc2    (FFN layers, rank 8)
+├── Pixel unshuffle          (1024 → 256 visual tokens)
+├── MLP projector            (12.6M params, frozen)
+│   └── LayerNorm → Linear → GELU → Linear
+└── InternLM2-1.8B          (1.8B params, 24 layers)
+    └── LoRA on w1, w2, w3  (gate/up/down projections, rank 8)
+</code></pre></div></div>
+
+<p><strong>Data flow:</strong> 112×112 face → resize to 448×448 → ImageNet normalization → ViT (1024 patch tokens) → pixel unshuffle (256 tokens) → MLP projector → LLM → pool hidden states → L2-normalized embedding.</p>
+
+<p><strong>LoRA details:</strong> Rank-8 adapters on ViT FFN layers (<code class="language-plaintext highlighter-rouge">fc1</code>, <code class="language-plaintext highlighter-rouge">fc2</code>) and LLM FFN layers (<code class="language-plaintext highlighter-rouge">w1</code>/gate, <code class="language-plaintext highlighter-rouge">w2</code>/up, <code class="language-plaintext highlighter-rouge">w3</code>/down). Adapters use float32; the 2.2B frozen base stays in fp16. With \(\alpha\)=8 and r=8, scaling is 1.0 — adapter output adds directly to the frozen base. Total trainable: 1.97M for ViT-only (0.64%), 7.86M for ViT+LLM (0.36%).</p>
+
+<p><strong>Gradient checkpointing note:</strong> Enabled with <code class="language-plaintext highlighter-rouge">use_reentrant=False</code>. The upstream InternVL2 code uses <code class="language-plaintext highlighter-rouge">use_reentrant=True</code>, which silently drops gradients for LoRA adapters because frozen base weights have <code class="language-plaintext highlighter-rouge">requires_grad=False</code>.</p>
+
+<h2 id="training">Training</h2>
+
+<p>Scenario 1 (ViT only): SGD (lr=\(10^{-3}\), momentum=0.9, WD=\(5 \times 10^{-4}\)) with cosine annealing and 5-epoch warmup, batch size 200, 15 epochs. Scenarios 2 &amp; 3 (full MLLM): AdamW (lr=\(2 \times 10^{-4}\), WD=0.01) with cosine annealing and 2-epoch warmup, gradient accumulation over 8–16 steps for effective batch sizes of 256, 10 epochs. bf16 mixed precision throughout, except LoRA adapters in float32.</p>
+
+<p>Identity-aware pair sampling follows CLIP’s strategy: each batch contains P identity pairs (2 images per identity), InfoNCE treats the 2P−2 non-partner images as negatives. A round-robin sampler cycles through identities to maximize data coverage despite the pair constraint. For Scenario 3, a separate <code class="language-plaintext highlighter-rouge">PairDataset</code> generates 50/50 positive/negative pairs, resampled each epoch.</p>
+
+<h2 id="open-questions">Open questions</h2>
+
+<p><strong>Unfreeze the projector?</strong> The MLP projector is frozen in all experiments. Finetuning it might let it learn to preserve identity-discriminative features during the visual-to-language mapping.</p>
+
+<p><strong>ArcFace loss instead of InfoNCE?</strong> All MLLM experiments use InfoNCE. The <a href="/projects/ArcFace-vs-InfoNCE/">previous project</a> shows ArcFace outperforms InfoNCE by 8 points on CFP-FP for the same backbone. Applying ArcFace loss to the MLLM embeddings would test whether the supervision gap explains the remaining distance.</p>
+
+<p><strong>Larger LoRA rank or attention targets?</strong> All experiments use rank 8 on FFN layers only. Increasing rank or targeting Q, K, V projections may help.</p>
+
+<p>I invite you to pick up where this leaves off. If you have ideas or want to build on this, please reach out.</p>
+
+<h2 id="experimental-setting">Experimental setting</h2>
+
+<ul>
+  <li>
+<strong>Training data</strong>: MS1M-ArcFace, 85,742 identities, 80/20 train/val split per identity</li>
+  <li>
+<strong>Hardware</strong>: 2 nodes × 4 H100s / 4 nodes × 4 A100s</li>
+  <li>
+<strong>Evaluation</strong>: LFW, CFP-FF, CFP-FP — 10-fold cross-validation at FAR@0.001</li>
+  <li>
+<strong>LoRA</strong>: rank 8, \(\alpha\)=8, targets <code class="language-plaintext highlighter-rouge">fc1</code>/<code class="language-plaintext highlighter-rouge">fc2</code> (ViT FFN) and <code class="language-plaintext highlighter-rouge">w1</code>/<code class="language-plaintext highlighter-rouge">w2</code>/<code class="language-plaintext highlighter-rouge">w3</code> (LLM FFN)</li>
+  <li>
+<strong>Scenario 1</strong>: InfoNCE loss, \(\tau\)=0.07, SGD (lr=\(10^{-3}\), momentum=0.9, WD=\(5 \times 10^{-4}\)), batch size 200, 15 epochs, bf16</li>
+  <li>
+<strong>Scenario 2</strong>: InfoNCE loss, \(\tau\)=0.07, AdamW (lr=\(2 \times 10^{-4}\), WD=0.01), gradient accumulation 8 steps, 10 epochs, bf16</li>
+  <li>
+<strong>Scenario 3</strong>: Cross-entropy on Yes/No token IDs, AdamW (lr=\(2 \times 10^{-4}\), WD=0.01), gradient accumulation 16 steps, 10 epochs, bf16</li>
+  <li>
+<strong>Baseline</strong>: ResNet-50 + InfoNCE, SGD (lr=0.1, momentum=0.9, WD=\(5 \times 10^{-4}\)), 30 epochs</li>
+</ul>
+
+<p>Code: <a href="https://github.com/enazari/LLM-FaceVerification" rel="external nofollow noopener" target="_blank">github.com/enazari/LLM-FaceVerification</a></p>
+
+          </article>
+
+        </div>
+
+      
+    </div>
+
+    <!-- Footer -->    <footer class="sticky-bottom mt-5">
+      <div class="container">
+        © Copyright 2026 Ehsan  Nazari. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme.
+
+      </div>
+    </footer>
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+    
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js"></script>
+
+  <!-- Bootstrap Table -->
+  <script defer src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+
+  <!-- Load Common JS -->
+  <script src="/assets/js/no_defer.js"></script>
+  <script defer src="/assets/js/common.js"></script>
+  <script defer src="/assets/js/copy_code.js" type="text/javascript"></script>
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>
