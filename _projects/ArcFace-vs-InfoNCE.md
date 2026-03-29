@@ -4,7 +4,7 @@ title: "Face Verification: ArcFace vs InfoNCE"
 description: How far can contrastive loss get us compared to margin-based classification?
 img: assets/img/ArcFace-vs-InfoNCE/infonce_pairs.png
 importance: 1
-category: Ongoing
+category: Explorations
 ---
 
 <div class='container' style='background-color: #f8f9fa; max-width: 100%;

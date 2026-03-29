@@ -3,8 +3,8 @@ layout: page
 title: "Face Verification: LoRA-Tuning a Multimodal LLM"
 description: Can a 2B-parameter multimodal LLM match a ResNet-50 trained from scratch?
 img: assets/img/LLM-FaceVerification/diagram_hero.png
-importance: 1
-category: Ongoing
+importance: 2
+category: Explorations
 ---
 
 <div class='container' style='background-color: #f8f9fa; max-width: 100%;

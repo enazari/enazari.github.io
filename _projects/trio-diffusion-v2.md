@@ -4,7 +4,7 @@ title: Trio Diffusion (v2)
 description: Autoregressive infinite image generation with diffusion models — ablations and findings
 img: assets/img/trio-diffusion-v2/hero_progressive_generated1.png
 importance: 1
-category: Ongoing
+category: Explorations
 ---
 
 <div class='container' style='background-color: #f8f9fa; max-width: 100%;

@@ -4,7 +4,7 @@ title: Trio Diffusion
 description: My Experiment with Infinite Image Generation
 img: assets/img/trio-diffusion/from_a_chatgpt_generated_image.png
 importance: 1
-category: Ongoing
+category: Explorations
 ---
 
 <div class='container' style='background-color: #f8f9fa; max-width: 100%;
