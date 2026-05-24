@@ -4,7 +4,7 @@ title: Masterface Attacks
 description: Universal adversarial embeddings that impersonate 47% of identities in a 99.65%-accurate face verifier — showing that benchmark accuracy is not a security metric.
 img: assets/img/Masterface-Attacks/fig_teaser.png
 importance: 1
-category: Published
+category: Explorations
 ---
 
 <div class='container' style='background-color: #f8f9fa; max-width: 100%;
