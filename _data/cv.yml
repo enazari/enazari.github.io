@@ -5,26 +5,18 @@
       institution: Pacefactory inc., Oakville, Canada
       year: Dec 2023 - Present
       description:
-        - "Optimized Lightweight Models for Real-Time Computer Vision:"
-        - Built a high-performance XGBoost-based object detection pipeline (Macro Avg 0.92; 100k samples processed in 0.3s)
-        - Developed a lightweight CNN-based sliding window detector for resource-constrained environments
-        - Built object/keypoint detection and semantic segmentation models from raw camera footage
-        - Analyzed capabilities and constraints of Aruco markers for accurate fiducial tracking
-        - Implemented CLIP-based state classification and HDBSCAN clustering for unsupervised category discovery
-        - "Semi-Automatic Annotation Tool Development:"
-        - Built a dockerized Django-based web app integrating XGBoost and YOLO for iterative object annotation
-        - Developed annotation tools using Grounding DINO (text prompts) and Rex-Omni (visual prompts)
-        - Built zero-shot training from SAM masks via multi-view bboxes
+        - Build and deploy real-time perception systems for industrial environments — object detection, keypoint estimation, and segmentation from raw video.
+        - Design low-latency visual state classification pipelines that combine classical features with learned representations.
+        - Build foundation-model-assisted annotation workflows to reduce manual labeling.
+        - Take models end-to-end from data through training, evaluation, export, and edge deployment.
 
-    - title: Research Assistant at CyberRange
+    - title: Research Assistant
       institution: University of Ottawa, Ottawa, Canada
-      year: Jan 2021 - Sep 2023
+      year: Jan 2021 - Nov 2023
       description:
-        - Built a system to bypass face verification systems
-          - Improved the current state-of-the-art approach's success rate by 15% - from 43% to 58%
-        - Created a system for training a GAN without requiring human oversight
-          - Efficiently solved "Is the GAN sufficiently trained?" using a novel algorithm tested on imagery and tabular data
-        - Employed GANs to tackle the class imbalance problem the results of which are published in two papers
+        - Research on generative models and adversarial robustness of face verification, leading to peer-reviewed publications.
+        - Designed methods for automated training of generative models and for using them under class imbalance.
+        - Studied adversarial attacks on deep embedding models for face verification.
 
     - title: Software Engineer at Armeh Sazeh Co.
       institution: Armeh Sazeh Co., Tehran, Iran
@@ -60,15 +52,15 @@
 - title: Skills
   type: nested_list
   contents:
-    - title: Python
+    - title: Computer Vision
       items:
-        - PyTorch | Tensorflow | Numpy | Pandas | scikit-learn | Matplotlib
-    - title: Software Development
+        - Object detection · Segmentation · Keypoint estimation · Real-time perception · Face recognition
+    - title: Machine Learning
       items:
-        - Git | Docker | GitHub Actions | Django | Laravel | React | UML
-    - title: Other
+        - Deep learning · Generative models · Representation learning · Adversarial robustness · Model evaluation
+    - title: Engineering
       items:
-        - SQL | C++ | PHP | SLURM
+        - Python · PyTorch · Multi-GPU training · ML deployment · Reproducible experimentation
 
 - title: Honors and Awards
   type: time_table
@@ -84,7 +76,7 @@
   type: time_table
   contents:
     - year: 2023
-      items: 
+      items:
         - Nazari, Ehsan, Paula Branco, and Guy-Vincent Jourdan. "Generalized Attacks on Face Verification Systems" (arXiv preprint).
     - year: 2023
       items: 
