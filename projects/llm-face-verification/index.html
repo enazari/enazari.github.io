@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Face Verification: LoRA-Tuning a Multimodal LLM · Ehsan Nazari</title><meta name="description" content="Can a 2B-parameter multimodal LLM match a ResNet-50 trained from scratch?">
+<link rel="icon" type="image/png" href="../../favicon.png"><link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="google-site-verification" content="bXUR7A0NablAs6DUwHXGGxXQYOcxzMlt48DhU76oiv8">
+<meta property="og:type" content="website"><meta property="og:title" content="Face Verification: LoRA-Tuning a Multimodal LLM · Ehsan Nazari"><meta property="og:description" content="Can a 2B-parameter multimodal LLM match a ResNet-50 trained from scratch?">
+<meta property="og:image" content="https://enazari.github.io/img/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">
+<style>:root{--bg:#fff;--fg:#1a1a1a;--mute:#6b6b6b;--line:#e6e6e6;--a:#0b5fd3;--road:#0a0a0a;--edge:transparent;--rail:#9aa0a6;--shadow:rgba(0,0,0,.16)}
+@media(prefers-color-scheme:dark){:root{--bg:#111;--fg:#e8e8e8;--mute:#9a9a9a;--line:#2a2a2a;--a:#7db3ff;--road:#000;--edge:#3a3a3a;--rail:#6f757c;--shadow:rgba(0,0,0,.6)}}
+*{box-sizing:border-box}
+html{overflow-y:scroll;font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--fg);-webkit-text-size-adjust:100%}
+body{margin:0 auto;max-width:60rem;padding:clamp(2rem,9vh,5rem) clamp(1.5rem,8vw,5rem) 4rem}
+a{color:var(--a);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2{line-height:1.25;margin:0}h1{font-size:1.7rem}h2{font-size:1.05rem;margin:0 0 .9rem;color:var(--mute);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+nav{display:flex;gap:1.25rem;flex-wrap:wrap;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:2rem}
+nav a{color:var(--fg)}nav a[aria-current]{font-weight:600}nav .home{margin-right:auto;font-weight:600}
+.narrow{max-width:42rem}
+body.hb{max-width:none}.col{max-width:60rem;margin:0 auto}
+.sub{color:var(--mute);margin:.35rem 0 0}
+.links{display:flex;gap:.4rem 1rem;flex-wrap:wrap;margin:.75rem 0 1rem}
+.hero{max-width:100%;height:auto;border-radius:.4rem;margin:1rem 0}
+.pub{padding:.9rem 0;border-top:1px solid var(--line)}.pub small{display:block;color:var(--mute)}
+.pub-h{margin-top:2rem}
+.btn{display:inline-block;border:1px solid var(--line);border-radius:.4rem;padding:.4rem .9rem;color:var(--fg)}
+footer{margin-top:3rem;color:var(--mute);font-size:.85rem}
+.home .work p{margin:0}.home .work ul{margin:.35rem 0 0;padding-left:1.1rem}.home .work li{margin:.3rem 0 0}
+table{border-collapse:collapse;font-size:.9rem;margin:.5rem 0 1rem}th,td{text-align:left;padding:.35rem .9rem .35rem 0;border-bottom:1px solid var(--line)}th{color:var(--mute);font-weight:600}
+@media(min-width:60rem){
+.land{grid-template-columns:24rem 1fr;gap:4rem;align-items:start}
+.me{position:sticky;top:1.5rem}.me img{width:12rem}}
+
+.intro h1{font-size:clamp(2rem,5.3333vw,4rem);line-height:1.1}.home .intro h1.bx{margin-bottom:clamp(20px,3.3333vw,40px)}.intro h1 .bl{display:inline-block;width:0;height:0}.intro .sub{font-size:.9rem}
+.plain{list-style:none;margin:0;padding:0}
+.home .bx{position:relative;outline:1px solid #e0457b;outline-offset:2px;box-sizing:border-box;margin:0;padding:.4rem .9rem}
+.home .ph{display:block;padding:.45rem}
+.home .ph img{display:block;width:4.6rem;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:.4rem}
+.home .intro{display:grid;grid-template-columns:auto 1fr;gap:.8rem 1.1rem;align-items:start}
+.home .ph{grid-row:1/5}
+.home .intro .bx{justify-self:start}
+.home h2.bx{width:fit-content;margin-top:1.2rem}
+.home .plain{display:flex;flex-wrap:wrap;gap:1.6rem;margin-top:.8rem}
+.home .plain a.bx,.home .foot a.bx{display:inline-block;padding:.35rem 1rem;color:var(--fg)}
+.home .foot a.bx{color:var(--a)}
+.home .plain a.bx.tn{padding:0;outline:0;display:inline-block}
+.tn{--tw:clamp(22px,3.6667vw,44px);--td:clamp(21px,3.5vw,42px)}
+.tn span{display:block;border:1px solid #e0457b;padding:.35rem 1rem calc(.35rem + var(--td) + 2px);clip-path:polygon(0 0,100% 0,100% 100%,calc(50% + var(--tw) / 2) 100%,calc(50% + var(--tw) / 2) calc(100% - var(--td)),calc(50% - var(--tw) / 2) calc(100% - var(--td)),calc(50% - var(--tw) / 2) 100%,0 100%)}
+.tn::before{content:"";position:absolute;left:50%;bottom:0;width:var(--tw);height:var(--td);margin-left:calc(var(--tw) / -2);background:#14171d;border:2px solid var(--c);border-bottom:0;box-sizing:border-box}
+.home .foot{gap:.8rem;margin-top:3.6rem}
+.home:not(.lx) .plain{gap:4.5rem 1.6rem}
+.home:not(.lx) .tn span{display:grid;grid-template-columns:3.25rem 1fr;gap:.1rem .7rem;align-items:center;width:14rem;text-align:left}
+.home:not(.lx) .tn .th{grid-row:1/3;width:3.25rem;height:3.25rem;object-fit:cover;border-radius:.35rem;display:block}
+.home:not(.lx){--g:1.4rem}@media(max-width:59.99rem){.home:not(.lx){--g:max(36px,2.2rem)}}.home:not(.lx) .plain li{display:flex}.home:not(.lx) .tn span{height:100%;box-sizing:border-box}
+.home:not(.lx) .tn b{font-size:.92rem;line-height:1.25;font-weight:600}.home:not(.lx) .tn small{color:var(--mute);font-size:.74rem;line-height:1.3}
+/* the current look in the split arrangement: text on the left, projects on the right (no yard, no divider) */
+@media(min-width:60rem){
+.home:not(.lx) .col{max-width:90rem;display:grid;grid-template-columns:clamp(23.5rem,32vw,40rem) 1fr;grid-template-rows:auto 1fr;gap:0 2.5rem;align-items:start}
+.home:not(.lx) .right{grid-area:1/2/3/3}
+.home:not(.lx) .intro{grid-area:1/1;grid-template-columns:auto 1fr;gap:0 1rem;align-items:end}
+.home:not(.lx) .ph{grid-row:auto;margin-bottom:var(--g)}
+.home:not(.lx) .ph img{width:clamp(6rem,9vw,11rem)}
+
+.home:not(.lx) .intro h1{font-size:clamp(1.9rem,2.4vw,3.4rem);white-space:nowrap;align-self:start}
+.home:not(.lx) .intro p.bx,.home:not(.lx) .intro .work{grid-column:1/-1;margin-top:var(--g)}.home:not(.lx) .intro h1+p.bx{margin-top:0}
+.home:not(.lx) .foot{grid-area:2/1;margin-top:var(--g)}
+.home:not(.lx) h2.sel{margin-top:0}
+.home:not(.lx) .plain{margin-top:1.5rem}
+.home.free:not(.lx) .bx{grid-area:auto!important;margin:0!important}}
+/* the chosen design (Nov 2): dashed borders, sharp corners, white boxes on a grid */
+:root{--gridline:#dcdcd6}
+@media(prefers-color-scheme:dark){:root{--gridline:#2a2a2a}}
+html:not(:has(main.lx)){background:linear-gradient(var(--gridline) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,var(--gridline) 1px,transparent 1px) 0 0/24px 24px,var(--bg)}
+.home:not(.lx) .bx{outline:0;border:1px dashed var(--mute);border-radius:0}
+.home:not(.lx) a.bx.tn{border:0;background:none}
+.home:not(.lx) .tn span{border:1px dashed var(--mute);border-radius:0}
+.home:not(.lx) .ph img{border-radius:0}
+/* the dashes are drawn, not left to the browser: its dashed border stretches the dashes to fit each side, so the sides of a box differ */
+.home:not(.lx) .bx:not(.tn),.home:not(.lx) .tn span,body.in nav a,body.in .btn,body.in .sheet,body.in .pcard,body.in h2.pub-h{border:1px solid transparent;background-color:var(--bg);background-image:repeating-linear-gradient(90deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(90deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(180deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(180deg,var(--mute) 0 4px,transparent 0 7px);background-position:left top,left bottom,left top,right top;background-size:100% 1px,100% 1px,1px 100%,1px 100%;background-repeat:no-repeat;background-origin:border-box}
+.home:not(.lx) .intro{row-gap:0}.home:not(.lx) .ph{margin-bottom:var(--g)}.home:not(.lx) .intro h1.bx{margin-bottom:var(--g)}.home:not(.lx) .intro p.bx,.home:not(.lx) .intro .work{margin-top:var(--g)}.home:not(.lx) .intro h1+p.bx{margin-top:0}.home:not(.lx) .foot{margin-top:var(--g)}.home.free:not(.lx) .bx{margin:0!important}
+.home:not(.lx) .cap{max-width:25rem;margin:4rem 0 0;color:var(--mute);font-size:.78rem;line-height:1.5}
+@media(max-width:40rem){.home:not(.lx) .tn span{width:auto;grid-template-columns:2.4rem 1fr}.home:not(.lx) .tn .th{width:2.4rem;height:2.4rem}.home:not(.lx) .tn small{display:none}}
+@media(max-width:59.99rem){.home:not(.lx) .ph img{width:6.5rem}}
+@media(max-width:30rem){.home .intro{grid-template-columns:1fr}.home .ph{grid-row:auto}}
+.home.free .bx{margin:0}
+.home{position:relative}
+.rb{position:absolute;top:calc(-1 * clamp(2rem,9vh,5rem));right:calc(-1 * clamp(1.5rem,8vw,5rem));width:clamp(210px,35vw,420px);height:clamp(157.5px,26.25vw,315px);pointer-events:none;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 25%);mask-image:linear-gradient(to right,transparent 0,#000 25%)}
+.rb svg{display:block;width:100%;height:100%}
+.rb .rail{stroke:var(--rail)}
+.rbc{position:absolute;left:23.69%;top:17.65%;width:49.67%;height:66.22%}
+@media(max-width:91rem){.rbon .col{padding-top:170px}}
+.home.nopad .col{padding-top:0}
+.cars{position:absolute;left:0;pointer-events:none;z-index:100000}
+.carsl{position:absolute;left:0;top:0;overflow:hidden;pointer-events:none;z-index:100000;transform-origin:0 0;contain:layout style}.carsl div,.carsl canvas{position:absolute;left:0;top:0}.carsl .cs{width:34px;height:22px;background-size:100% 100%;transform-origin:17px 11px;will-change:transform}.carsl .cw{overflow:hidden}.carsl .rg{box-sizing:border-box;border:2.5px solid;border-radius:50%}.carsl .sp{box-sizing:border-box;border:2px solid #e8590c;border-radius:50%;animation:carsp .4s linear forwards}@keyframes carsp{from{transform:scale(var(--s));opacity:.9}to{transform:scale(1);opacity:0}}
+.carbtn,.cpbtns button{font:inherit;font-size:.8rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:.4rem;padding:.3rem .7rem;cursor:pointer}
+.carbtn.carfix{position:fixed;right:1rem;bottom:1rem;z-index:100001;color:var(--mute)}
+.carctl{display:flex;gap:.4rem;margin-top:.55rem}.carctl button{font:inherit;font-size:.78rem;line-height:1;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:0;padding:.35rem .7rem;cursor:pointer}.carctl .carbtn{display:inline-flex;align-items:center;padding:.3rem .45rem;color:var(--mute)}.carctl button:hover,.carctl .carbtn[aria-expanded=true]{color:var(--fg);border-color:var(--fg)}
+.carbtn[aria-expanded=true]{color:var(--fg)}
+.carpanel{position:fixed;z-index:100001;width:min(34rem,calc(100vw - 2rem));max-height:calc(100vh - 5rem);overflow:auto;box-sizing:border-box;padding:.8rem;background:var(--bg);border:1px solid var(--line);border-radius:.5rem;font-size:.8rem;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.carpanel{z-index:2147483000!important;overflow:auto;border:1px dashed var(--mute)!important;border-radius:0!important;box-shadow:0 6px 20px rgba(0,0,0,.08)!important}.carpanel[hidden]{display:none}.carpanel.fix{position:fixed;right:1rem;bottom:3.4rem}.cpsum{margin:0 0 .6rem}.cpmore summary{cursor:pointer;color:var(--mute);margin:.2rem 0 .5rem}
+.cphead{margin:0 0 .6rem;color:var(--mute);line-height:1.45}
+.cpbtns{display:flex;flex-wrap:wrap;gap:.4rem}
+.cpdrv{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .7rem}.cpdrv button{font:inherit;font-size:.8rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);padding:.3rem .7rem;cursor:pointer}.cpdrv button[aria-pressed=true]{border-color:var(--fg);font-weight:600}.cpdrv button:disabled{opacity:.5;cursor:progress}
+.cprate{display:flex;align-items:center;gap:.5rem;margin:.6rem 0 0}.cprate input{flex:1;max-width:12rem}
+.carpanel pre{margin:.5rem 0 0;font-size:.72rem;white-space:pre-wrap;color:var(--mute)}
+.cphud{margin:.5rem 0 0;min-height:1em;color:var(--mute)}
+.free{position:relative}.free .bx{position:absolute;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y pinch-zoom;transition:box-shadow .15s,scale .15s}.free .bx.grab,.free .bx.lift{will-change:transform}
+@media(hover:hover){.free .bx:hover{box-shadow:0 3px 12px var(--shadow)}}
+.free .bx.lift{scale:1.03;box-shadow:0 8px 22px var(--shadow)}
+.free .grab{cursor:grabbing;outline-color:#1a7f37}
+.free .bx:not(.tn),.free .tn span{background:var(--bg)}
+.foot{margin-top:1.5rem;display:flex;gap:.4rem 1rem;flex-wrap:wrap}
+
+/* project pages that mirror a GitHub README (readmes.py) */
+.readme{max-width:56rem}.rtop{margin:0 0 1.2rem}.readme .rtop:last-child{margin:2rem 0 0}
+.md{line-height:1.6;overflow-wrap:break-word}
+.md h1{font-size:2rem;line-height:1.25;margin:.4rem 0 1rem;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+.md h2{font-size:1.45rem;line-height:1.3;margin:2.2rem 0 .9rem;color:var(--fg);letter-spacing:normal;text-transform:none;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+.md h3{font-size:1.15rem;margin:1.7rem 0 .6rem}.md h4,.md h5,.md h6{font-size:1rem;margin:1.4rem 0 .5rem}
+.md p,.md ul,.md ol,.md blockquote,.md pre,.md table,.md details,.md .highlight{margin:0 0 1rem}
+.md li+li{margin-top:.25rem}.md img{max-width:100%;height:auto;vertical-align:middle}
+.md blockquote{margin-left:0;padding:0 1rem;color:var(--mute);border-left:.25rem solid var(--line)}
+.md code{font:.86em ui-monospace,SFMono-Regular,Menlo,Consolas,"DejaVu Sans Mono",monospace;background:color-mix(in srgb,var(--fg) 7%,transparent);padding:.15em .35em;border-radius:4px}
+.md pre{overflow:auto;padding:1rem;background:color-mix(in srgb,var(--fg) 5%,transparent);border-radius:6px;line-height:1.45}
+.md pre code{background:none;padding:0;font-size:.85rem}
+.md table{display:block;max-width:100%;width:max-content;overflow:auto;border-collapse:collapse}
+.md th,.md td{padding:.4rem .8rem;border:1px solid var(--line);vertical-align:top}.md th{font-weight:600}
+.md tr:nth-child(2n){background:color-mix(in srgb,var(--fg) 3%,transparent)}
+.md hr{border:0;border-top:1px solid var(--line);margin:1.6rem 0}.md summary{cursor:pointer}
+.md [align=center]{text-align:center}.md .sub{margin:-.4rem 0 1.2rem}
+.md .figs{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin:1.2rem 0 .5rem}.md .figs img{flex:1 1 0;min-width:4rem;border-radius:4px}
+.md .figcap{text-align:center;color:var(--mute);font-size:.88rem;margin:0 0 1.4rem}.md .pubbox{padding:.8rem 1rem;border-left:.25rem solid var(--line);background:color-mix(in srgb,var(--fg) 3%,transparent);margin:0 0 1rem}.md .pubbox p:last-child{margin:0}.md .katex-display{overflow-x:auto;overflow-y:hidden;padding:.25rem 0}
+.md .pl-c{color:#6e7781}.md .pl-c1,.md .pl-s .pl-v{color:#0550ae}.md .pl-e,.md .pl-en{color:#6639ba}.md .pl-ent{color:#116329}
+.md .pl-k{color:#cf222e}.md .pl-s,.md .pl-pds,.md .pl-sr{color:#0a3069}.md .pl-v,.md .pl-smi{color:#953800}
+@media(prefers-color-scheme:dark){.md .pl-c{color:#8b949e}.md .pl-c1{color:#79c0ff}.md .pl-e,.md .pl-en{color:#d2a8ff}.md .pl-ent{color:#7ee787}.md .pl-k{color:#ff7b72}.md .pl-s,.md .pl-pds,.md .pl-sr{color:#a5d6ff}.md .pl-v,.md .pl-smi{color:#ffa657}}
+
+/* the inner pages in the home page's design: grid paper, dashed square boxes, the text on one white sheet (the dashes: the rule above) */
+body.in{width:fit-content;max-width:min(60rem,100%)}body.in nav{gap:.5rem;flex-wrap:wrap;padding:0;border:0;margin-bottom:1.25rem}body.in .rtop{display:flex;flex-wrap:wrap;gap:.5rem}
+body.in nav a{padding:.35rem .9rem;color:var(--a)}body.in nav .home{color:var(--fg)}body.in nav a[aria-current]{color:var(--fg);font-weight:600}
+body.in .sheet{width:fit-content;max-width:100%;padding:clamp(1.2rem,3.5vw,2.6rem)}
+body.in .narrow{width:42rem;max-width:100%}body.in .readme{width:54rem;max-width:100%}
+body.in .btn{padding:.35rem .9rem;color:var(--a);border-radius:0}
+body.in nav a:hover,body.in .btn:hover,body.in .pcard:hover{text-decoration:none;box-shadow:0 3px 12px var(--shadow)}
+body.in h2.pub-h{width:fit-content;padding:.3rem .9rem;margin:2rem 0 .7rem;font-size:.92rem}body.in h1+h2.pub-h{margin-top:1.4rem}
+body.in footer{margin-top:1.25rem}
+@media(max-width:30rem){body.in{padding-left:1rem;padding-right:1rem}body.in nav{gap:.35rem}body.in nav a{padding:.3rem .55rem;font-size:.88rem}}
+.cards{list-style:none;margin:1.4rem 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1rem}
+.pcard{display:grid;grid-template-columns:3.25rem 1fr;grid-template-rows:auto 1fr;gap:.15rem .8rem;align-items:start;height:100%;padding:.8rem .9rem;color:var(--fg)}
+.pcard .th{grid-row:1/3;width:3.25rem;height:3.25rem;object-fit:cover;border-radius:.35rem}
+.pcard b{font-size:.95rem;line-height:1.3}.pcard small{color:var(--mute);font-size:.8rem;line-height:1.4}
+</style><link rel="stylesheet" href="../../katex/katex.min.css"></head><body class="in">
+<nav><a class="home" href="../../">Ehsan Nazari</a><a href="../../projects/">Projects</a><a href="../../publications/">Publications</a></nav>
+<main><div class=sheet><div class="readme"><p class="rtop"><a class="btn" href="https://github.com/enazari/LLM-FaceVerification">View on GitHub</a></p><article class="md"><h1 id="loratuning-a-multimodal-llm-for-face-verification" dir="auto">LoRA‑tuning a multimodal LLM for face verification</h1>
+<h2 id="comparing-a-visiononly-encoder-full-multimodal-embeddings-and-pairwise-llm-prompting-under-the-same-training-and-evaluation-setup" dir="auto">Comparing a vision‑only encoder, full multimodal embeddings, and pairwise LLM prompting under the same training and evaluation setup.</h2>
+<p align="center" dir="auto">
+  <a target="_blank" rel="noopener noreferrer" href="img/diagram_hero.webp"><img decoding="async" height="294" src="img/diagram_hero.webp" alt="InternVL2-2B overview: two face images feed into InternViT and InternLM2 to produce a Yes/No verification answer" width="700"></a>
+</p>
+<markdown-accessiblity-table><table align="center" role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/diagram_baseline.webp"><img decoding="async" loading="lazy" height="178" src="img/diagram_baseline.webp" width="440"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/diagram_vit.webp"><img decoding="async" loading="lazy" height="178" src="img/diagram_vit.webp" width="440"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/diagram_mllm.webp"><img decoding="async" loading="lazy" height="196" src="img/diagram_mllm.webp" width="440"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/diagram_pairwise.webp"><img decoding="async" loading="lazy" height="222" src="img/diagram_pairwise.webp" width="440"></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><em>Three ways to extract face identity from a 2-billion-parameter multimodal model. None beat a ResNet-50 trained from scratch.</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<p dir="auto">Builds on a <a href="https://github.com/enazari/ArcFace-vs-InfoNCE">previous project</a> that established InfoNCE and ArcFace baselines on the same data and evaluation protocol.</p>
+<p dir="auto"><strong>Key findings:</strong></p>
+<ul dir="auto">
+<li>In this setting, multimodal LLMs do not match task-specific encoders for face verification, even after parameter-efficient finetuning.</li>
+<li>The limitation appears to be architectural: despite contrastive finetuning, identity information may be degraded by the multimodal pipeline and is difficult to fully recover from representations pretrained for language modeling.</li>
+<li>Language fusion tends to reduce identity signal: adding the LLM slightly underperforms a vision-only encoder in our experiments.</li>
+<li>CNN baselines remain strong: a ResNet-50 trained from scratch matches or slightly exceeds all 2B-parameter MLLM variants evaluated here.</li>
+</ul>
+<h2 id="results" dir="auto">Results</h2>
+<p dir="auto">All models trained on MS1M-ArcFace (85K identities), evaluated with 10-fold cross-validation at FAR@0.001.</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Experiment</th>
+<th>Loss</th>
+<th>LFW</th>
+<th>CFP-FF</th>
+<th>CFP-FP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord" style="color:darkgreen;"><span class="mord text" style="color:darkgreen;"><span class="mord textbf" style="color:darkgreen;">ResNet-50 — baseline</span></span></span></span></span></span></td>
+<td><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord" style="color:darkgreen;"><span class="mord text" style="color:darkgreen;"><span class="mord textbf" style="color:darkgreen;">InfoNCE</span></span></span></span></span></span></td>
+<td><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8056em;vertical-align:-0.0556em;"></span><span class="mord" style="color:darkgreen;"><span class="mord text" style="color:darkgreen;"><span class="mord textbf" style="color:darkgreen;">99.55%</span></span></span></span></span></span></td>
+<td><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8056em;vertical-align:-0.0556em;"></span><span class="mord" style="color:darkgreen;"><span class="mord text" style="color:darkgreen;"><span class="mord textbf" style="color:darkgreen;">99.59%</span></span></span></span></span></span></td>
+<td><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8056em;vertical-align:-0.0556em;"></span><span class="mord" style="color:darkgreen;"><span class="mord text" style="color:darkgreen;"><span class="mord textbf" style="color:darkgreen;">87.87%</span></span></span></span></span></span></td>
+</tr>
+<tr>
+<td>InternViT-300M (frozen)</td>
+<td>InfoNCE</td>
+<td>66.12%</td>
+<td>54.34%</td>
+<td>51.76%</td>
+</tr>
+<tr>
+<td><strong>InternViT-300M + LoRA</strong></td>
+<td><strong>InfoNCE</strong></td>
+<td><strong>99.02%</strong></td>
+<td><strong>97.60%</strong></td>
+<td><strong>87.07%</strong></td>
+</tr>
+<tr>
+<td>InternVL2-2B (frozen)</td>
+<td>InfoNCE</td>
+<td>60.12%</td>
+<td>53.17%</td>
+<td>50.86%</td>
+</tr>
+<tr>
+<td><strong>InternVL2-2B + LoRA</strong></td>
+<td><strong>InfoNCE</strong></td>
+<td><strong>98.68%</strong></td>
+<td><strong>98.09%</strong></td>
+<td><strong>84.20%</strong></td>
+</tr>
+<tr>
+<td>InternVL2-2B pairwise (frozen)</td>
+<td>Cross-entropy</td>
+<td>50.00%</td>
+<td>50.40%</td>
+<td>50.03%</td>
+</tr>
+<tr>
+<td>InternVL2-2B pairwise + LoRA</td>
+<td>Cross-entropy</td>
+<td>73.03%</td>
+<td>65.77%</td>
+<td>56.56%</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3 id="infonce-loss" dir="auto">InfoNCE loss</h3>
+<p align="center" dir="auto">
+  <a target="_blank" rel="noopener noreferrer" href="img/infonce_pairs.webp"><img decoding="async" loading="lazy" height="328" src="img/infonce_pairs.webp" alt="InfoNCE pairwise similarity matrix" width="400"></a>
+</p>
+<p dir="auto">Each batch contains P identity pairs (2 images per identity). InfoNCE maximizes cosine similarity between partners while pushing apart the 2P−2 non-partner images, using temperature-scaled softmax over the similarity matrix. All MLLM experiments in this project use InfoNCE (τ=0.07). The same ResNet-50 baseline trained with ArcFace loss reaches 99.72% LFW / 95.84% CFP-FP — see the <a href="https://github.com/enazari/ArcFace-vs-InfoNCE">ArcFace vs InfoNCE project</a> for an extended comparison of loss functions on the same backbone and data.</p>
+<h3 id="scenario-1-how-much-face-identity-signal-is-already-present-in-the-vision-encoder-of-a-pretrained-multimodal-model-and-how-far-can-parameter-efficient-finetuning-push-it-for-verification" dir="auto">Scenario 1: How much face-identity signal is already present in the vision encoder of a pretrained multimodal model, and how far can parameter-efficient finetuning push it for verification?</h3>
+<p dir="auto">The ViT was pretrained jointly with the LLM on multimodal data — not faces. Frozen, it scores 66% on LFW (near chance). But rank-8 LoRA adapters on just the FFN layers (<code class="notranslate">fc1</code>, <code class="notranslate">fc2</code>) lift it to 99.02% on LFW and 87.07% on CFP-FP — nearly matching the ResNet-50 baseline (99.55% / 87.87%) — by training only 1.97M parameters (0.64% of the model). The raw signal is weak, but the representation is highly adaptable. Adapters are kept in float32 while the 306M base stays frozen in fp16 — without this, optimizer states for small rank-8 matrices can accumulate rounding errors that may stall training.</p>
+<h3 id="scenario-2-does-the-language-stack-in-a-multimodal-llm-improve-identity-discriminative-visual-representations-for-face-verification" dir="auto">Scenario 2: Does the language stack in a multimodal LLM improve identity-discriminative visual representations for face verification?</h3>
+<p dir="auto">It dilutes them. InternVL2-2B + LoRA (full MLLM) slightly <em>underperforms</em> InternViT + LoRA (ViT only) — 98.68% vs 99.02% on LFW, 84.20% vs 87.07% on CFP-FP. I think this comes down to two things. First, the pipeline between ViT and LLM is lossy: pixel unshuffle reduces 1,024 visual tokens to 256, and the MLP projector was trained to align visual tokens with language tokens for captioning — not to preserve identity-discriminative spatial information. The ViT alone retains more of what faces need. Second, the LLM’s hidden states are shaped by a next-token prediction objective, not by metric learning — pooling them into a face embedding repurposes a representation that was never designed for pairwise similarity.</p>
+<h3 id="scenario-3-can-the-llms-internally-fused-representation-of-two-face-images-improve-verification-over-independently-encoded-embeddings-and-a-downstream-similarity-metric" dir="auto">Scenario 3: Can the LLM’s internally fused representation of two face images improve verification over independently encoded embeddings and a downstream similarity metric?</h3>
+<p dir="auto">No. Prompting the MLLM with two images and “Do these two images show the same person?” is the most natural use of an LLM for verification. It is also the worst. Even with LoRA, it reaches only 73% on LFW and 57% on CFP-FP. Cross-entropy over two tokens (Yes/No) provides a much weaker training signal than InfoNCE over a batch of 2P negatives — the model must simultaneously learn identity similarity <em>and</em> verbalize it through a single token.</p>
+<h3 id="the-baseline-still-wins" dir="auto">The baseline still wins</h3>
+<p dir="auto">A ResNet-50 with 7–50× fewer parameters, no pretraining on billions of image-text pairs, and the same InfoNCE loss matches or beats every MLLM configuration. On CFP-FP: 87.87% vs 87.07% for InternViT + LoRA and 84.20% for InternVL2-2B + LoRA.</p>
+<h3 id="lora-configuration" dir="auto">LoRA configuration</h3>
+<p dir="auto">All LoRA experiments use rank 8, α=8 (scaling factor 1.0). Adapters are kept in float32 for numerical stability; the frozen base stays in fp16.</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Model</th>
+<th>Total params</th>
+<th>LoRA params</th>
+<th>Trainable</th>
+<th>Adapters</th>
+<th>Targets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InternViT-300M</td>
+<td>305,978,368</td>
+<td>1,966,080</td>
+<td>0.64%</td>
+<td>48</td>
+<td><code class="notranslate">fc1</code>, <code class="notranslate">fc2</code> (ViT FFN)</td>
+</tr>
+<tr>
+<td>InternVL2-2B</td>
+<td>2,213,618,688</td>
+<td>7,864,320</td>
+<td>0.36%</td>
+<td>120</td>
+<td><code class="notranslate">fc1</code>, <code class="notranslate">fc2</code> (ViT FFN) + <code class="notranslate">w1</code>, <code class="notranslate">w2</code>, <code class="notranslate">w3</code> (LLM FFN)</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3 id="ablation-pooling-strategy" dir="auto">Ablation: pooling strategy</h3>
+<p dir="auto">For the full MLLM (Scenario 2), the LLM produces a sequence of hidden states. Using the same trained checkpoint, I evaluated three pooling strategies post-hoc — no retraining, just different aggregations:</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Pooling</th>
+<th>LFW</th>
+<th>CFP-FF</th>
+<th>CFP-FP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>visual_mean</strong> (default)</td>
+<td><strong>98.68%</strong></td>
+<td><strong>98.09%</strong></td>
+<td><strong>84.20%</strong></td>
+</tr>
+<tr>
+<td>all_mean</td>
+<td>98.67%</td>
+<td>98.14%</td>
+<td>84.40%</td>
+</tr>
+<tr>
+<td>last_token</td>
+<td>94.20%</td>
+<td>94.97%</td>
+<td>76.73%</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">Visual-only and all-sequence pooling perform nearly identically — the prompt tokens contribute little. Last-token drops 4–7 points because the final token’s representation is shaped by next-token prediction, not identity accumulation. Script: <code class="notranslate">sessions/internvl_lora/ablation/run_pooling_ablation.py</code></p>
+<h2 id="three-experimental-scenarios" dir="auto">Three experimental scenarios</h2>
+<h3 id="scenario-1-vision-encoder-only" dir="auto">Scenario 1: Vision encoder only</h3>
+<p align="center" dir="auto">
+  <a target="_blank" rel="noopener noreferrer" href="img/diagram_vit.webp"><img decoding="async" loading="lazy" height="283" src="img/diagram_vit.webp" alt="Scenario 1: ViT encoder" width="700"></a>
+</p>
+<p dir="auto">Extract InternViT-300M from InternVL2-2B and use it as a standalone face encoder. Each image passes through the ViT; mean-pooled patch embeddings form a 1024-d face representation, trained with InfoNCE loss.</p>
+<h3 id="scenario-2-full-mllm-embeddings" dir="auto">Scenario 2: Full MLLM embeddings</h3>
+<p align="center" dir="auto">
+  <a target="_blank" rel="noopener noreferrer" href="img/diagram_mllm.webp"><img decoding="async" loading="lazy" height="312" src="img/diagram_mllm.webp" alt="Scenario 2: Full MLLM" width="700"></a>
+</p>
+<p dir="auto">Feed each image through the complete pipeline: ViT → pixel unshuffle → MLP projector → LLM, with the prompt <em>“Describe this person’s facial features for identification.”</em> The LLM’s visual token hidden states are mean-pooled into a 2048-d embedding, trained with InfoNCE loss.</p>
+<h3 id="scenario-3-pairwise-yesno-classifier" dir="auto">Scenario 3: Pairwise yes/no classifier</h3>
+<p align="center" dir="auto">
+  <a target="_blank" rel="noopener noreferrer" href="img/diagram_pairwise.webp"><img decoding="async" loading="lazy" height="352" src="img/diagram_pairwise.webp" alt="Scenario 3: Pairwise classifier" width="700"></a>
+</p>
+<p dir="auto">Feed both images into a single forward pass with <em>“Do these two images show the same person? Answer Yes or No.”</em> P(Yes) serves as the verification score, trained with cross-entropy over the Yes/No token IDs.</p>
+<p dir="auto">Each scenario is tested frozen and LoRA-finetuned. Scenarios 1 &amp; 2 use InfoNCE (τ=0.07); Scenario 3 uses cross-entropy. The ResNet-50 + InfoNCE baseline uses the same loss and data.</p>
+<h2 id="architecture" dir="auto">Architecture</h2>
+<pre class="notranslate"><code class="notranslate">InternVL2-2B (2.1B params)
+├── InternViT-300M          (304M params, 24 layers)
+│   └── LoRA on fc1, fc2    (FFN layers, rank 8)
+├── Pixel unshuffle          (1024 → 256 visual tokens)
+├── MLP projector            (12.6M params, frozen)
+│   └── LayerNorm → Linear → GELU → Linear
+└── InternLM2-1.8B          (1.8B params, 24 layers)
+    └── LoRA on w1, w2, w3  (gate/up/down projections, rank 8)
+</code></pre>
+<p dir="auto"><strong>Data flow:</strong> 112×112 face → resize to 448×448 → ImageNet normalization → ViT (1024 patch tokens) → pixel unshuffle (256 tokens) → MLP projector → LLM → pool hidden states → L2-normalized embedding.</p>
+<p dir="auto"><strong>LoRA details:</strong> Rank-8 adapters on ViT FFN layers (<code class="notranslate">fc1</code>, <code class="notranslate">fc2</code>) and LLM FFN layers (<code class="notranslate">w1</code>/gate, <code class="notranslate">w2</code>/up, <code class="notranslate">w3</code>/down). Adapters use float32; the 2.2B frozen base stays in fp16. With α=8 and r=8, scaling is 1.0 — adapter output adds directly to the frozen base. Total trainable: 1.97M for ViT-only (0.64%), 7.86M for ViT+LLM (0.36%).</p>
+<p dir="auto"><strong>Gradient checkpointing note:</strong> Enabled with <code class="notranslate">use_reentrant=False</code>. The upstream InternVL2 code uses <code class="notranslate">use_reentrant=True</code>, which silently drops gradients for LoRA adapters because frozen base weights have <code class="notranslate">requires_grad=False</code>.</p>
+<h2 id="training" dir="auto">Training</h2>
+<p dir="auto">Trained on multi-node GPU clusters: 2 nodes × 4 H100s and 4 nodes × 4 A100s. Training data and checkpoints are copied to <code class="notranslate">$SLURM_TMPDIR</code> on each node to avoid network filesystem bottlenecks.</p>
+<p dir="auto">Scenario 1 (ViT only): SGD (lr=10⁻³, momentum=0.9, WD=5×10⁻&amp;sup4;) with cosine annealing and 5-epoch warmup, batch size 200, 15 epochs. Scenarios 2 &amp; 3 (full MLLM): AdamW (lr=2×10⁻&amp;sup4;, WD=0.01) with cosine annealing and 2-epoch warmup, gradient accumulation over 8–16 steps for effective batch sizes of 256, 10 epochs. bf16 mixed precision throughout, except LoRA adapters in float32.</p>
+<p dir="auto">Identity-aware pair sampling follows CLIP’s strategy: each batch contains P identity pairs (2 images per identity), InfoNCE treats the 2P−2 non-partner images as negatives. A round-robin sampler cycles through identities to maximize data coverage despite the pair constraint. For Scenario 3, a separate <code class="notranslate">PairDataset</code> generates 50/50 positive/negative pairs, resampled each epoch.</p>
+<h2 id="open-questions" dir="auto">Open questions</h2>
+<p dir="auto"><strong>Unfreeze the projector?</strong> The MLP projector is frozen in all experiments. Finetuning it might let it learn to preserve identity-discriminative features during the visual-to-language mapping.</p>
+<p dir="auto"><strong>ArcFace loss instead of InfoNCE?</strong> All MLLM experiments use InfoNCE. The <a href="https://github.com/enazari/ArcFace-vs-InfoNCE">previous project</a> shows ArcFace outperforms InfoNCE by 8 points on CFP-FP for the same backbone. Applying ArcFace loss to the MLLM embeddings would test whether the supervision gap explains the remaining distance.</p>
+<p dir="auto"><strong>Larger LoRA rank or attention targets?</strong> All experiments use rank 8 on FFN layers only. Increasing rank or targeting Q, K, V projections may help.</p>
+<p dir="auto">I invite you to pick up where this leaves off. If you have ideas or want to build on this, please reach out.</p>
+<h2 id="experimental-setting" dir="auto">Experimental setting</h2>
+<ul dir="auto">
+<li><strong>Training data</strong>: MS1M-ArcFace, 85,742 identities, 80/20 train/val split per identity</li>
+<li><strong>Hardware</strong>: 2 nodes × 4 H100s / 4 nodes × 4 A100s</li>
+<li><strong>Evaluation</strong>: LFW, CFP-FF, CFP-FP — 10-fold cross-validation at FAR@0.001</li>
+<li><strong>LoRA</strong>: rank 8, α=8, targets <code class="notranslate">fc1</code>/<code class="notranslate">fc2</code> (ViT FFN) and <code class="notranslate">w1</code>/<code class="notranslate">w2</code>/<code class="notranslate">w3</code> (LLM FFN)</li>
+<li><strong>Scenario 1</strong>: InfoNCE loss, τ=0.07, SGD (lr=10⁻³, momentum=0.9, WD=5×10⁻&amp;sup4;), batch size 200, 15 epochs, bf16</li>
+<li><strong>Scenario 2</strong>: InfoNCE loss, τ=0.07, AdamW (lr=2×10⁻&amp;sup4;, WD=0.01), gradient accumulation 8 steps, 10 epochs, bf16</li>
+<li><strong>Scenario 3</strong>: Cross-entropy on Yes/No token IDs, AdamW (lr=2×10⁻&amp;sup4;, WD=0.01), gradient accumulation 16 steps, 10 epochs, bf16</li>
+<li><strong>Baseline</strong>: ResNet-50 + InfoNCE, SGD (lr=0.1, momentum=0.9, WD=5×10⁻&amp;sup4;), 30 epochs</li>
+</ul>
+<p dir="auto">All results reproducible via config files in <code class="notranslate">configs/</code>.</p>
+<details>
+<summary><strong>Setup &amp; Usage</strong></summary>
+<h3 id="setup" dir="auto">Setup</h3>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">conda env create -f environment.yaml
+conda activate face-verification
+cp .env.example .env   <span class="pl-c"><span class="pl-c">#</span> fill in dataset paths + HPC credentials</span></pre></div>
+<h3 id="data" dir="auto">Data</h3>
+<ul dir="auto">
+<li><strong>MS1M-ArcFace</strong> (training): Download from <a href="https://www.kaggle.com/datasets/jadesag3/ms1m-arcface/data" rel="nofollow">Kaggle</a>. Set <code class="notranslate">MS1M_DIR</code> in <code class="notranslate">.env</code>. LMDBs are built automatically on first run.</li>
+<li><strong>LFW</strong> (eval): Auto-downloaded and cached on first eval.</li>
+<li><strong>CFP</strong> (eval): Download from <a href="https://www.kaggle.com/datasets/chinafax/cfpw-dataset" rel="nofollow">Kaggle</a> to <code class="notranslate">data/cfp-dataset/</code>.</li>
+</ul>
+<h3 id="model-weights" dir="auto">Model weights</h3>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">python scripts/download_internvl.py   <span class="pl-c"><span class="pl-c">#</span> downloads InternVL2-2B (~4.4 GB)</span></pre></div>
+<h3 id="training-1" dir="auto">Training</h3>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate"><span class="pl-c"><span class="pl-c">#</span> Scenario 1: ViT encoder + LoRA</span>
+accelerate launch train.py --config internvit-lora
+
+<span class="pl-c"><span class="pl-c">#</span> Scenario 2: Full MLLM siamese + LoRA</span>
+accelerate launch train.py --config internvl-lora
+
+<span class="pl-c"><span class="pl-c">#</span> Scenario 3: Pairwise classifier + LoRA</span>
+accelerate launch train_pairwise.py --config internvl-pair-lora</pre></div>
+<h3 id="evaluation" dir="auto">Evaluation</h3>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">python eval_checkpoint.py --config internvit-lora</pre></div>
+<p dir="auto">Evaluates on LFW and CFP-FF/FP with 10-fold cross-validation at FAR@0.001.</p>
+<h3 id="slurm-cluster" dir="auto">SLURM cluster</h3>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate"><span class="pl-c1">cd</span> hpc <span class="pl-k">&amp;&amp;</span> bash _download_models.sh <span class="pl-k">&amp;&amp;</span> <span class="pl-c1">cd</span> ..   <span class="pl-c"><span class="pl-c">#</span> pre-download weights (login node)</span>
+bash hpc/internvit-lora.sh                     <span class="pl-c"><span class="pl-c">#</span> submit Scenario 1</span>
+bash hpc/internvl-lora.sh                      <span class="pl-c"><span class="pl-c">#</span> submit Scenario 2</span>
+bash hpc/internvl-pair-lora.sh                 <span class="pl-c"><span class="pl-c">#</span> submit Scenario 3</span></pre></div>
+</details>
+<details>
+<summary><strong>Project structure</strong></summary>
+<pre class="notranslate"><code class="notranslate">train.py                  # Scenario 1 &amp; 2 training (embedding-based)
+train_pairwise.py         # Scenario 3 training (pairwise classifier)
+eval_checkpoint.py        # Standalone evaluation
+configs/                  # YAML configs per experiment
+src/
+  backbones/              # InternViT, InternVL, InternVL-Pair, LoRA
+  data/                   # LMDB dataset, pair sampler, MS1M preparation
+  eval/                   # LFW/CFP evaluation with 10-fold CV
+  losses/                 # InfoNCE loss
+  training.py             # Shared training scaffold (multi-node, checkpointing)
+  utils.py                # LR scheduling, checkpointing, config overrides
+hpc/                      # SLURM job scripts (self-submitting)
+scripts/                  # Model download, diagram generation, analysis
+tests/                    # Unit tests
+</code></pre>
+</details>
+<h2 id="acknowledgments" dir="auto">Acknowledgments</h2>
+<p dir="auto">This research was enabled in part by support provided by the Digital Research Alliance of Canada (<a href="https://alliancecan.ca" rel="nofollow">alliancecan.ca</a>).</p></article><p class="rtop"><a class="btn" href="https://github.com/enazari/LLM-FaceVerification">View on GitHub</a></p></div></div></main>
+</body></html>

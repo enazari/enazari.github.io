@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trio Diffusion · Ehsan Nazari</title><meta name="description" content="Autoregressive infinite image generation with diffusion models — ablations and findings.">
+<link rel="icon" type="image/png" href="../../favicon.png"><link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="google-site-verification" content="bXUR7A0NablAs6DUwHXGGxXQYOcxzMlt48DhU76oiv8">
+<meta property="og:type" content="website"><meta property="og:title" content="Trio Diffusion · Ehsan Nazari"><meta property="og:description" content="Autoregressive infinite image generation with diffusion models — ablations and findings.">
+<meta property="og:image" content="https://enazari.github.io/img/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">
+<style>:root{--bg:#fff;--fg:#1a1a1a;--mute:#6b6b6b;--line:#e6e6e6;--a:#0b5fd3;--road:#0a0a0a;--edge:transparent;--rail:#9aa0a6;--shadow:rgba(0,0,0,.16)}
+@media(prefers-color-scheme:dark){:root{--bg:#111;--fg:#e8e8e8;--mute:#9a9a9a;--line:#2a2a2a;--a:#7db3ff;--road:#000;--edge:#3a3a3a;--rail:#6f757c;--shadow:rgba(0,0,0,.6)}}
+*{box-sizing:border-box}
+html{overflow-y:scroll;font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--fg);-webkit-text-size-adjust:100%}
+body{margin:0 auto;max-width:60rem;padding:clamp(2rem,9vh,5rem) clamp(1.5rem,8vw,5rem) 4rem}
+a{color:var(--a);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2{line-height:1.25;margin:0}h1{font-size:1.7rem}h2{font-size:1.05rem;margin:0 0 .9rem;color:var(--mute);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+nav{display:flex;gap:1.25rem;flex-wrap:wrap;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:2rem}
+nav a{color:var(--fg)}nav a[aria-current]{font-weight:600}nav .home{margin-right:auto;font-weight:600}
+.narrow{max-width:42rem}
+body.hb{max-width:none}.col{max-width:60rem;margin:0 auto}
+.sub{color:var(--mute);margin:.35rem 0 0}
+.links{display:flex;gap:.4rem 1rem;flex-wrap:wrap;margin:.75rem 0 1rem}
+.hero{max-width:100%;height:auto;border-radius:.4rem;margin:1rem 0}
+.pub{padding:.9rem 0;border-top:1px solid var(--line)}.pub small{display:block;color:var(--mute)}
+.pub-h{margin-top:2rem}
+.btn{display:inline-block;border:1px solid var(--line);border-radius:.4rem;padding:.4rem .9rem;color:var(--fg)}
+footer{margin-top:3rem;color:var(--mute);font-size:.85rem}
+.home .work p{margin:0}.home .work ul{margin:.35rem 0 0;padding-left:1.1rem}.home .work li{margin:.3rem 0 0}
+table{border-collapse:collapse;font-size:.9rem;margin:.5rem 0 1rem}th,td{text-align:left;padding:.35rem .9rem .35rem 0;border-bottom:1px solid var(--line)}th{color:var(--mute);font-weight:600}
+@media(min-width:60rem){
+.land{grid-template-columns:24rem 1fr;gap:4rem;align-items:start}
+.me{position:sticky;top:1.5rem}.me img{width:12rem}}
+
+.intro h1{font-size:clamp(2rem,5.3333vw,4rem);line-height:1.1}.home .intro h1.bx{margin-bottom:clamp(20px,3.3333vw,40px)}.intro h1 .bl{display:inline-block;width:0;height:0}.intro .sub{font-size:.9rem}
+.plain{list-style:none;margin:0;padding:0}
+.home .bx{position:relative;outline:1px solid #e0457b;outline-offset:2px;box-sizing:border-box;margin:0;padding:.4rem .9rem}
+.home .ph{display:block;padding:.45rem}
+.home .ph img{display:block;width:4.6rem;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:.4rem}
+.home .intro{display:grid;grid-template-columns:auto 1fr;gap:.8rem 1.1rem;align-items:start}
+.home .ph{grid-row:1/5}
+.home .intro .bx{justify-self:start}
+.home h2.bx{width:fit-content;margin-top:1.2rem}
+.home .plain{display:flex;flex-wrap:wrap;gap:1.6rem;margin-top:.8rem}
+.home .plain a.bx,.home .foot a.bx{display:inline-block;padding:.35rem 1rem;color:var(--fg)}
+.home .foot a.bx{color:var(--a)}
+.home .plain a.bx.tn{padding:0;outline:0;display:inline-block}
+.tn{--tw:clamp(22px,3.6667vw,44px);--td:clamp(21px,3.5vw,42px)}
+.tn span{display:block;border:1px solid #e0457b;padding:.35rem 1rem calc(.35rem + var(--td) + 2px);clip-path:polygon(0 0,100% 0,100% 100%,calc(50% + var(--tw) / 2) 100%,calc(50% + var(--tw) / 2) calc(100% - var(--td)),calc(50% - var(--tw) / 2) calc(100% - var(--td)),calc(50% - var(--tw) / 2) 100%,0 100%)}
+.tn::before{content:"";position:absolute;left:50%;bottom:0;width:var(--tw);height:var(--td);margin-left:calc(var(--tw) / -2);background:#14171d;border:2px solid var(--c);border-bottom:0;box-sizing:border-box}
+.home .foot{gap:.8rem;margin-top:3.6rem}
+.home:not(.lx) .plain{gap:4.5rem 1.6rem}
+.home:not(.lx) .tn span{display:grid;grid-template-columns:3.25rem 1fr;gap:.1rem .7rem;align-items:center;width:14rem;text-align:left}
+.home:not(.lx) .tn .th{grid-row:1/3;width:3.25rem;height:3.25rem;object-fit:cover;border-radius:.35rem;display:block}
+.home:not(.lx){--g:1.4rem}@media(max-width:59.99rem){.home:not(.lx){--g:max(36px,2.2rem)}}.home:not(.lx) .plain li{display:flex}.home:not(.lx) .tn span{height:100%;box-sizing:border-box}
+.home:not(.lx) .tn b{font-size:.92rem;line-height:1.25;font-weight:600}.home:not(.lx) .tn small{color:var(--mute);font-size:.74rem;line-height:1.3}
+/* the current look in the split arrangement: text on the left, projects on the right (no yard, no divider) */
+@media(min-width:60rem){
+.home:not(.lx) .col{max-width:90rem;display:grid;grid-template-columns:clamp(23.5rem,32vw,40rem) 1fr;grid-template-rows:auto 1fr;gap:0 2.5rem;align-items:start}
+.home:not(.lx) .right{grid-area:1/2/3/3}
+.home:not(.lx) .intro{grid-area:1/1;grid-template-columns:auto 1fr;gap:0 1rem;align-items:end}
+.home:not(.lx) .ph{grid-row:auto;margin-bottom:var(--g)}
+.home:not(.lx) .ph img{width:clamp(6rem,9vw,11rem)}
+
+.home:not(.lx) .intro h1{font-size:clamp(1.9rem,2.4vw,3.4rem);white-space:nowrap;align-self:start}
+.home:not(.lx) .intro p.bx,.home:not(.lx) .intro .work{grid-column:1/-1;margin-top:var(--g)}.home:not(.lx) .intro h1+p.bx{margin-top:0}
+.home:not(.lx) .foot{grid-area:2/1;margin-top:var(--g)}
+.home:not(.lx) h2.sel{margin-top:0}
+.home:not(.lx) .plain{margin-top:1.5rem}
+.home.free:not(.lx) .bx{grid-area:auto!important;margin:0!important}}
+/* the chosen design (Nov 2): dashed borders, sharp corners, white boxes on a grid */
+:root{--gridline:#dcdcd6}
+@media(prefers-color-scheme:dark){:root{--gridline:#2a2a2a}}
+html:not(:has(main.lx)){background:linear-gradient(var(--gridline) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,var(--gridline) 1px,transparent 1px) 0 0/24px 24px,var(--bg)}
+.home:not(.lx) .bx{outline:0;border:1px dashed var(--mute);border-radius:0}
+.home:not(.lx) a.bx.tn{border:0;background:none}
+.home:not(.lx) .tn span{border:1px dashed var(--mute);border-radius:0}
+.home:not(.lx) .ph img{border-radius:0}
+/* the dashes are drawn, not left to the browser: its dashed border stretches the dashes to fit each side, so the sides of a box differ */
+.home:not(.lx) .bx:not(.tn),.home:not(.lx) .tn span,body.in nav a,body.in .btn,body.in .sheet,body.in .pcard,body.in h2.pub-h{border:1px solid transparent;background-color:var(--bg);background-image:repeating-linear-gradient(90deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(90deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(180deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(180deg,var(--mute) 0 4px,transparent 0 7px);background-position:left top,left bottom,left top,right top;background-size:100% 1px,100% 1px,1px 100%,1px 100%;background-repeat:no-repeat;background-origin:border-box}
+.home:not(.lx) .intro{row-gap:0}.home:not(.lx) .ph{margin-bottom:var(--g)}.home:not(.lx) .intro h1.bx{margin-bottom:var(--g)}.home:not(.lx) .intro p.bx,.home:not(.lx) .intro .work{margin-top:var(--g)}.home:not(.lx) .intro h1+p.bx{margin-top:0}.home:not(.lx) .foot{margin-top:var(--g)}.home.free:not(.lx) .bx{margin:0!important}
+.home:not(.lx) .cap{max-width:25rem;margin:4rem 0 0;color:var(--mute);font-size:.78rem;line-height:1.5}
+@media(max-width:40rem){.home:not(.lx) .tn span{width:auto;grid-template-columns:2.4rem 1fr}.home:not(.lx) .tn .th{width:2.4rem;height:2.4rem}.home:not(.lx) .tn small{display:none}}
+@media(max-width:59.99rem){.home:not(.lx) .ph img{width:6.5rem}}
+@media(max-width:30rem){.home .intro{grid-template-columns:1fr}.home .ph{grid-row:auto}}
+.home.free .bx{margin:0}
+.home{position:relative}
+.rb{position:absolute;top:calc(-1 * clamp(2rem,9vh,5rem));right:calc(-1 * clamp(1.5rem,8vw,5rem));width:clamp(210px,35vw,420px);height:clamp(157.5px,26.25vw,315px);pointer-events:none;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 25%);mask-image:linear-gradient(to right,transparent 0,#000 25%)}
+.rb svg{display:block;width:100%;height:100%}
+.rb .rail{stroke:var(--rail)}
+.rbc{position:absolute;left:23.69%;top:17.65%;width:49.67%;height:66.22%}
+@media(max-width:91rem){.rbon .col{padding-top:170px}}
+.home.nopad .col{padding-top:0}
+.cars{position:absolute;left:0;pointer-events:none;z-index:100000}
+.carsl{position:absolute;left:0;top:0;overflow:hidden;pointer-events:none;z-index:100000;transform-origin:0 0;contain:layout style}.carsl div,.carsl canvas{position:absolute;left:0;top:0}.carsl .cs{width:34px;height:22px;background-size:100% 100%;transform-origin:17px 11px;will-change:transform}.carsl .cw{overflow:hidden}.carsl .rg{box-sizing:border-box;border:2.5px solid;border-radius:50%}.carsl .sp{box-sizing:border-box;border:2px solid #e8590c;border-radius:50%;animation:carsp .4s linear forwards}@keyframes carsp{from{transform:scale(var(--s));opacity:.9}to{transform:scale(1);opacity:0}}
+.carbtn,.cpbtns button{font:inherit;font-size:.8rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:.4rem;padding:.3rem .7rem;cursor:pointer}
+.carbtn.carfix{position:fixed;right:1rem;bottom:1rem;z-index:100001;color:var(--mute)}
+.carctl{display:flex;gap:.4rem;margin-top:.55rem}.carctl button{font:inherit;font-size:.78rem;line-height:1;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:0;padding:.35rem .7rem;cursor:pointer}.carctl .carbtn{display:inline-flex;align-items:center;padding:.3rem .45rem;color:var(--mute)}.carctl button:hover,.carctl .carbtn[aria-expanded=true]{color:var(--fg);border-color:var(--fg)}
+.carbtn[aria-expanded=true]{color:var(--fg)}
+.carpanel{position:fixed;z-index:100001;width:min(34rem,calc(100vw - 2rem));max-height:calc(100vh - 5rem);overflow:auto;box-sizing:border-box;padding:.8rem;background:var(--bg);border:1px solid var(--line);border-radius:.5rem;font-size:.8rem;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.carpanel{z-index:2147483000!important;overflow:auto;border:1px dashed var(--mute)!important;border-radius:0!important;box-shadow:0 6px 20px rgba(0,0,0,.08)!important}.carpanel[hidden]{display:none}.carpanel.fix{position:fixed;right:1rem;bottom:3.4rem}.cpsum{margin:0 0 .6rem}.cpmore summary{cursor:pointer;color:var(--mute);margin:.2rem 0 .5rem}
+.cphead{margin:0 0 .6rem;color:var(--mute);line-height:1.45}
+.cpbtns{display:flex;flex-wrap:wrap;gap:.4rem}
+.cpdrv{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .7rem}.cpdrv button{font:inherit;font-size:.8rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);padding:.3rem .7rem;cursor:pointer}.cpdrv button[aria-pressed=true]{border-color:var(--fg);font-weight:600}.cpdrv button:disabled{opacity:.5;cursor:progress}
+.cprate{display:flex;align-items:center;gap:.5rem;margin:.6rem 0 0}.cprate input{flex:1;max-width:12rem}
+.carpanel pre{margin:.5rem 0 0;font-size:.72rem;white-space:pre-wrap;color:var(--mute)}
+.cphud{margin:.5rem 0 0;min-height:1em;color:var(--mute)}
+.free{position:relative}.free .bx{position:absolute;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y pinch-zoom;transition:box-shadow .15s,scale .15s}.free .bx.grab,.free .bx.lift{will-change:transform}
+@media(hover:hover){.free .bx:hover{box-shadow:0 3px 12px var(--shadow)}}
+.free .bx.lift{scale:1.03;box-shadow:0 8px 22px var(--shadow)}
+.free .grab{cursor:grabbing;outline-color:#1a7f37}
+.free .bx:not(.tn),.free .tn span{background:var(--bg)}
+.foot{margin-top:1.5rem;display:flex;gap:.4rem 1rem;flex-wrap:wrap}
+
+/* project pages that mirror a GitHub README (readmes.py) */
+.readme{max-width:56rem}.rtop{margin:0 0 1.2rem}.readme .rtop:last-child{margin:2rem 0 0}
+.md{line-height:1.6;overflow-wrap:break-word}
+.md h1{font-size:2rem;line-height:1.25;margin:.4rem 0 1rem;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+.md h2{font-size:1.45rem;line-height:1.3;margin:2.2rem 0 .9rem;color:var(--fg);letter-spacing:normal;text-transform:none;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+.md h3{font-size:1.15rem;margin:1.7rem 0 .6rem}.md h4,.md h5,.md h6{font-size:1rem;margin:1.4rem 0 .5rem}
+.md p,.md ul,.md ol,.md blockquote,.md pre,.md table,.md details,.md .highlight{margin:0 0 1rem}
+.md li+li{margin-top:.25rem}.md img{max-width:100%;height:auto;vertical-align:middle}
+.md blockquote{margin-left:0;padding:0 1rem;color:var(--mute);border-left:.25rem solid var(--line)}
+.md code{font:.86em ui-monospace,SFMono-Regular,Menlo,Consolas,"DejaVu Sans Mono",monospace;background:color-mix(in srgb,var(--fg) 7%,transparent);padding:.15em .35em;border-radius:4px}
+.md pre{overflow:auto;padding:1rem;background:color-mix(in srgb,var(--fg) 5%,transparent);border-radius:6px;line-height:1.45}
+.md pre code{background:none;padding:0;font-size:.85rem}
+.md table{display:block;max-width:100%;width:max-content;overflow:auto;border-collapse:collapse}
+.md th,.md td{padding:.4rem .8rem;border:1px solid var(--line);vertical-align:top}.md th{font-weight:600}
+.md tr:nth-child(2n){background:color-mix(in srgb,var(--fg) 3%,transparent)}
+.md hr{border:0;border-top:1px solid var(--line);margin:1.6rem 0}.md summary{cursor:pointer}
+.md [align=center]{text-align:center}.md .sub{margin:-.4rem 0 1.2rem}
+.md .figs{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin:1.2rem 0 .5rem}.md .figs img{flex:1 1 0;min-width:4rem;border-radius:4px}
+.md .figcap{text-align:center;color:var(--mute);font-size:.88rem;margin:0 0 1.4rem}.md .pubbox{padding:.8rem 1rem;border-left:.25rem solid var(--line);background:color-mix(in srgb,var(--fg) 3%,transparent);margin:0 0 1rem}.md .pubbox p:last-child{margin:0}.md .katex-display{overflow-x:auto;overflow-y:hidden;padding:.25rem 0}
+.md .pl-c{color:#6e7781}.md .pl-c1,.md .pl-s .pl-v{color:#0550ae}.md .pl-e,.md .pl-en{color:#6639ba}.md .pl-ent{color:#116329}
+.md .pl-k{color:#cf222e}.md .pl-s,.md .pl-pds,.md .pl-sr{color:#0a3069}.md .pl-v,.md .pl-smi{color:#953800}
+@media(prefers-color-scheme:dark){.md .pl-c{color:#8b949e}.md .pl-c1{color:#79c0ff}.md .pl-e,.md .pl-en{color:#d2a8ff}.md .pl-ent{color:#7ee787}.md .pl-k{color:#ff7b72}.md .pl-s,.md .pl-pds,.md .pl-sr{color:#a5d6ff}.md .pl-v,.md .pl-smi{color:#ffa657}}
+
+/* the inner pages in the home page's design: grid paper, dashed square boxes, the text on one white sheet (the dashes: the rule above) */
+body.in{width:fit-content;max-width:min(60rem,100%)}body.in nav{gap:.5rem;flex-wrap:wrap;padding:0;border:0;margin-bottom:1.25rem}body.in .rtop{display:flex;flex-wrap:wrap;gap:.5rem}
+body.in nav a{padding:.35rem .9rem;color:var(--a)}body.in nav .home{color:var(--fg)}body.in nav a[aria-current]{color:var(--fg);font-weight:600}
+body.in .sheet{width:fit-content;max-width:100%;padding:clamp(1.2rem,3.5vw,2.6rem)}
+body.in .narrow{width:42rem;max-width:100%}body.in .readme{width:54rem;max-width:100%}
+body.in .btn{padding:.35rem .9rem;color:var(--a);border-radius:0}
+body.in nav a:hover,body.in .btn:hover,body.in .pcard:hover{text-decoration:none;box-shadow:0 3px 12px var(--shadow)}
+body.in h2.pub-h{width:fit-content;padding:.3rem .9rem;margin:2rem 0 .7rem;font-size:.92rem}body.in h1+h2.pub-h{margin-top:1.4rem}
+body.in footer{margin-top:1.25rem}
+@media(max-width:30rem){body.in{padding-left:1rem;padding-right:1rem}body.in nav{gap:.35rem}body.in nav a{padding:.3rem .55rem;font-size:.88rem}}
+.cards{list-style:none;margin:1.4rem 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1rem}
+.pcard{display:grid;grid-template-columns:3.25rem 1fr;grid-template-rows:auto 1fr;gap:.15rem .8rem;align-items:start;height:100%;padding:.8rem .9rem;color:var(--fg)}
+.pcard .th{grid-row:1/3;width:3.25rem;height:3.25rem;object-fit:cover;border-radius:.35rem}
+.pcard b{font-size:.95rem;line-height:1.3}.pcard small{color:var(--mute);font-size:.8rem;line-height:1.4}
+</style></head><body class="in">
+<nav><a class="home" href="../../">Ehsan Nazari</a><a href="../../projects/">Projects</a><a href="../../publications/">Publications</a></nav>
+<main><div class=sheet><div class="readme"><p class="rtop"><a class="btn" href="https://github.com/enazari/Trio-Diffusion">View on GitHub</a></p><article class="md"><h1 id="can-a-diffusion-model-generate-images-that-extend-forever" dir="auto">Can a diffusion model generate images that extend forever?</h1>
+<p dir="auto"><a href="#full-generation-gallery">Original gallery</a> · <a href="#seamless-gallery">Seamless outputs gallery</a></p>
+<markdown-accessiblity-table><table align="center" role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/hero_progressive_generated1.webp"><img decoding="async" height="380" src="img/hero_progressive_generated1.webp" width="380"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/hero_clip_progressive_s4.webp"><img decoding="async" loading="lazy" height="380" src="img/hero_clip_progressive_s4.webp" width="380"></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><em>Generated patch-by-patch from pure noise. No global planner, no fixed canvas. More in the <a href="#full-generation-gallery">original gallery</a>.</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<hr>
+<h3 id="before-you-continue" dir="auto">Before you continue</h3>
+<p dir="auto">Since this write-up, further experiments have <strong>largely solved the patch seam problem</strong> — the gallery below shows outputs from a new model design; code and details will be published separately. Note: several inference modes have access to the source image, so coherent objects in those outputs reflect image leakage rather than the model's own generative capability. The honest test is the seedless outputs — those are seamless, but the model cannot yet synthesize coherent scene structure on its own.</p>
+<markdown-accessiblity-table><table align="center" role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_banner_1.webp"><img decoding="async" loading="lazy" height="380" src="img/gallery_banner_1.webp" width="380"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_banner_2.webp"><img decoding="async" loading="lazy" height="380" src="img/gallery_banner_2.webp" width="380"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_banner_3.webp"><img decoding="async" loading="lazy" height="380" src="img/gallery_banner_3.webp" width="380"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_arbsize_D_omid-cat_2048.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_arbsize_D_omid-cat_2048.webp" width="380"></a></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><em>Top-left: image-CLIP conditioned, no canvas guide (C21, DINOv2). Top-right: image-seeded (C21, DINOv2). Bottom-left: fully seedless 1024×1024 (C27, CLIP). Bottom-right: image-seeded, generated at 2048×2048 (C21, DINOv2). No patch boundaries visible in any. Code for these results to be published soon. More in the <a href="#seamless-gallery">seamless outputs gallery</a>.</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<hr>
+<p dir="auto"><strong>At a glance:</strong></p>
+<ul dir="auto">
+<li><strong>Problem:</strong> Standard diffusion models generate fixed-size images. Can we grow the canvas indefinitely, one patch at a time?</li>
+<li><strong>Approach:</strong> Each patch is generated by a diffusion model conditioned on three spatial neighbors (L-shape) and a frozen vision backbone (CLIP or DINOv2). Fully autoregressive, no fixed canvas size.</li>
+<li><strong>What works:</strong> Locally convincing patches, successful color/texture transfer from seed images, learned position-dependent statistics (sky at top). Patch seams have since been resolved — see the <a href="#seamless-gallery">seamless outputs gallery</a>.</li>
+<li><strong>What doesn't:</strong> Coherent objects (people, animals, scenes) do not emerge across patches. This remains the main open problem.</li>
+</ul>
+<p dir="auto">Standard diffusion models generate fixed-size images. This project takes a different approach: generate images patch by patch, autoregressively, where each new patch is conditioned on three spatial neighbors in an L-shape: top-left, top-right, bottom-left. The L-shape is the key: it provides enough local context to generate coherently in any direction (right, down, or diagonally), so the canvas can grow without bound. Trained from scratch on 3,000–10,000 COCO images in pixel space. Builds on a <a href="https://enazari.github.io/projects/trio-diffusion/" rel="nofollow">previous version</a> that had no global conditioning.</p>
+<pre class="notranslate"><code class="notranslate">┌─────────────┬─────────────┐
+│  TOP LEFT   │  TOP RIGHT  │  Context patches (known)
+├─────────────┼─────────────┤
+│ BOTTOM LEFT │    ????     │  Target patch (generated by diffusion)
+└─────────────┴─────────────┘
+</code></pre>
+<p align="center" dir="auto">
+  <a target="_blank" rel="noopener noreferrer" href="img/generation_process.webp"><img decoding="async" loading="lazy" height="210" src="img/generation_process.webp" alt="Autoregressive generation process" width="900"></a>
+</p>
+<h2 id="method" dir="auto">Method</h2>
+<h3 id="spatial-inpainting" dir="auto">Spatial inpainting</h3>
+<p dir="auto">Each generation step is a 2×2 inpainting problem. The three context patches and the noisy target are tiled into a single spatial block <code class="notranslate">[B, 4, 2*bs, 2*bs]</code>: 3 RGB channels plus a binary mask indicating which quadrants are known. Because the patches sit at their true spatial positions, standard convolutions see across patch borders and learn seamless transitions. Unlike Patch Diffusion (Wang et al., NeurIPS 2023), which uses patches for training efficiency on fixed images, this is fully autoregressive over a potentially unbounded grid.</p>
+<h3 id="repaint-conditioning" dir="auto">RePaint conditioning</h3>
+<p dir="auto">At every denoising step, the known regions (TL, TR, BL) are re-noised to their correct noise level and re-injected, providing persistent spatial context throughout the entire reverse process rather than injecting it once and hoping it survives 1,000 denoising steps. This is the key mechanism that keeps neighboring patches "visible" to the model at every step. From RePaint (Lugmayr et al., CVPR 2022). See <a href="#design-decisions">Design Decisions</a> for the full formulation.</p>
+<h3 id="global-context-via-vision-backbones" dir="auto">Global context via vision backbones</h3>
+<p dir="auto">A frozen vision backbone (CLIP or DINOv2) encodes a broader view of the scene and injects it into every UNet block via cross-attention. This tests whether off-the-shelf global features can act as a low-bandwidth planner for unbounded canvases. The backbone can be driven in two ways: (1) <strong>autoregressive</strong>: re-encode the partial canvas at each generation step, so the model "sees" its own output as the image grows and global context evolves with it. This is the intended mode for unbounded generation, though in practice CLIP and DINOv2 compress the growing canvas into a global embedding that loses the spatial information needed for local decisions; or (2) <strong>seed image</strong>: a fixed embedding from a reference image steers the entire generation. The cross-attention output is gated by a learned <code class="notranslate">tanh</code> scalar (initialized at 0.5, not zero; zero-init caused a starvation equilibrium, see <a href="#design-decisions">Design Decisions</a>). Classifier-free guidance modulates backbone influence at inference.</p>
+<h3 id="training" dir="auto">Training</h3>
+<p dir="auto">The model is a UNet (177M parameters, base channels 96, self-attention at 16×16 and deeper) operating on 64×64 patches in pixel space; no VAE, no latent space. With a step size of 32 and overlapping extraction, even 3,000 COCO images yield a large number of training patches. 1,000 diffusion timesteps with a linear beta schedule. Multi-GPU training via <code class="notranslate">accelerate</code>. Experiments use frozen CLIP ViT-B/32 and frozen DINOv2 ViT-B/14 as the global context backbone.</p>
+<h2 id="results" dir="auto">Results</h2>
+<h3 id="patch-completion" dir="auto">Patch completion</h3>
+<p dir="auto">During validation, the model is tested on both training and unseen images. For each image, 4 random positions are picked. At each position, the model receives the three ground-truth context patches plus a CLIP embedding of the full image and generates the missing bottom-right patch. In each pair below, the left image is the original and the right has 4 patches replaced by model output. Can you spot them?</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/comparison_train.webp"><img decoding="async" loading="lazy" height="220" src="img/comparison_train.webp" width="400"></a><br><em>Training image (bear)</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/comparison_unseen.webp"><img decoding="async" loading="lazy" height="146" src="img/comparison_unseen.webp" width="400"></a><br><em>Unseen image (city road)</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<p dir="auto">Patches are locally convincing: edge continuity, texture, and color match their neighbors even on unseen images. The challenge is chaining them together; each patch is plausible in isolation, but global structure does not emerge.</p>
+<h3 id="unbounded-generation" dir="auto">Unbounded generation</h3>
+<p dir="auto">Full autoregressive raster-scan: every patch is generated sequentially, each conditioned on previously generated neighbors. Vibrant textures emerge, but no recognizable objects spanning multiple patches. More examples in the <a href="#full-generation-gallery">full gallery</a>.</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip_progressive_s1.webp"><img decoding="async" loading="lazy" height="220" src="img/gallery_clip_progressive_s1.webp" width="220"></a><br><em>CLIP (10K), seed 1</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip_progressive_s2.webp"><img decoding="async" loading="lazy" height="220" src="img/gallery_clip_progressive_s2.webp" width="220"></a><br><em>CLIP (10K), seed 2</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip_progressive_s3.webp"><img decoding="async" loading="lazy" height="220" src="img/gallery_clip_progressive_s3.webp" width="220"></a><br><em>CLIP (10K), seed 3</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip_progressive_s4.webp"><img decoding="async" loading="lazy" height="220" src="img/gallery_clip_progressive_s4.webp" width="220"></a><br><em>CLIP (10K), seed 4</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<h3 id="what-the-model-learned" dir="auto">What the model learned</h3>
+<h4 id="color-and-texture-transfer" dir="auto">Color and texture transfer</h4>
+<p dir="auto">When conditioned on a seed image, the backbone successfully transfers color palette and texture to the generated output. The dark greens of the leaf and the rainy speckle of the blurred image both carry through clearly.</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_leaf.webp"><img decoding="async" loading="lazy" height="278" src="img/seed_leaf.webp" width="170"></a><br><em>📷 Real photo (leaf)</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino_seed_leaf.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino_seed_leaf.webp" width="170"></a><br><em> Generated, DINOv2 (3K)</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_blurred.webp"><img decoding="async" loading="lazy" height="254" src="img/seed_blurred.webp" width="170"></a><br><em>📷 Real photo (blurred)</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_seed_blurred.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_seed_blurred.webp" width="170"></a><br><em> Generated, DINOv2 (10K)</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<h4 id="position-dependent-statistics" dir="auto">Position-dependent statistics</h4>
+<p dir="auto">An interesting observation with the DINOv2 backbone: in the umbrella-seeded generations, sky-blue tones consistently appear near the top of the image across different random seeds, matching the spatial layout of the original photograph where the sky occupies the upper portion. This pattern holds across both the 3K and 10K dataset variants:</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_umbrella.webp"><img decoding="async" loading="lazy" height="226" src="img/seed_umbrella.webp" width="170"></a><br><em>📷 Real photo</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino_seed_umbrella_s1.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino_seed_umbrella_s1.webp" width="170"></a><br><em> DINOv2 (3K), seed 1</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino_seed_umbrella_s2.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino_seed_umbrella_s2.webp" width="170"></a><br><em> DINOv2 (3K), seed 2</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino_large_seed_umbrella_s1.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino_large_seed_umbrella_s1.webp" width="170"></a><br><em> DINOv2 (10K), seed 1</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<p dir="auto">This suggests the model has learned position-dependent statistics through the combination of positional encoding and backbone conditioning; it knows that sky belongs at the top. The global coherence problem is not about whether the model can use positional or semantic information at all, but about whether it can coordinate <em>structure</em> across patches.</p>
+<p dir="auto">Seed images by <a href="https://unsplash.com/@itsomidarmin" rel="nofollow">@itsomidarmin</a>.</p>
+<h3 id="ablation-no-backbone-no-position-encoding" dir="auto">Ablation: no backbone, no position encoding</h3>
+<p dir="auto">Without any global conditioning or positional signal (<code class="notranslate">no_backbone_no_position_encoding_3k</code> config), the model generates each patch in isolation. The result is incoherent texture soup; each patch is plausible on its own, but adjacent patches jump between unrelated textures with no locality or cohesion:</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/negative_nopos_none_s1.webp"><img decoding="async" loading="lazy" height="260" src="img/negative_nopos_none_s1.webp" width="260"></a><br><em>No backbone, no pos. enc., seed 1</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/negative_nopos_none_s2.webp"><img decoding="async" loading="lazy" height="260" src="img/negative_nopos_none_s2.webp" width="260"></a><br><em>No backbone, no pos. enc., seed 2</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<h3 id="what-didnt-work" dir="auto">What didn't work</h3>
+<h4 id="clip-text-conditioning" dir="auto">CLIP text conditioning</h4>
+<p dir="auto">CLIP's text encoder can drive the cross-attention pathway instead of an image encoder. In theory, a text prompt like "blue" or "red" should steer the output. In practice, the model ignores text embeddings entirely; "blue", "red", and "cat" produce nearly identical outputs:</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/negative_text_blue.webp"><img decoding="async" loading="lazy" height="220" src="img/negative_text_blue.webp" width="220"></a><br><em>Text: “blue”</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/negative_text_red.webp"><img decoding="async" loading="lazy" height="220" src="img/negative_text_red.webp" width="220"></a><br><em>Text: “red”</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/negative_text_cat.webp"><img decoding="async" loading="lazy" height="220" src="img/negative_text_cat.webp" width="220"></a><br><em>Text: “cat”</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<p dir="auto">The cross-attention pathway learns from image embeddings during training. CLIP text embeddings occupy a different region of the shared embedding space; close enough in CLIP's contrastive sense, but too far out-of-distribution for the learned cross-attention gates to act on.</p>
+<h4 id="systematic-experiment-summary" dir="auto">Systematic experiment summary</h4>
+<p dir="auto">The <a href="https://enazari.github.io/projects/trio-diffusion/" rel="nofollow">previous version</a> had no global conditioning at all. In this version, I systematically tested whether vision backbones and positional encoding could give the model a sense of broader scene structure. Five configurations, all trained for 475+ epochs on the same data:</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Config</th>
+<th>Backbone</th>
+<th>Data</th>
+<th>Pos. Enc.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">clip_10k</code></td>
+<td>CLIP ViT-B/32 (frozen)</td>
+<td>10K</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code class="notranslate">dino_3k</code></td>
+<td>DINOv2 ViT-B/14 (frozen)</td>
+<td>3K</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code class="notranslate">dino_10k</code></td>
+<td>DINOv2 ViT-B/14 (frozen)</td>
+<td>10K</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code class="notranslate">no_backbone_3k</code></td>
+<td>None</td>
+<td>3K</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code class="notranslate">no_backbone_no_position_encoding_3k</code></td>
+<td>None</td>
+<td>3K</td>
+<td>No</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto"><strong>Position encoding alone does nothing.</strong> <code class="notranslate">no_backbone_3k</code> and <code class="notranslate">no_backbone_no_position_encoding_3k</code> produce identical results; without a global signal, positional encoding has no effect.</p>
+<p dir="auto"><strong>Backbone injection provides context but not structure.</strong> CLIP and DINOv2 successfully transfer color palette, texture, and position-dependent statistics (sky at top), but coherent objects never emerge across patch boundaries.</p>
+<p dir="auto"><strong>More data doesn't help.</strong> <code class="notranslate">dino_3k</code> and <code class="notranslate">dino_10k</code> show no difference, suggesting the bottleneck is architectural, not data-limited.</p>
+<p dir="auto">I surmise the bottleneck is architectural. During autoregressive generation, each patch only ever sees three real neighbors in a 2×2 window. Any global signal from CLIP or DINOv2 must survive through a chain of locally generated patches, and it does not. The backbone embeddings encode high-level semantics (scene type, dominant color) but not the spatial layout information needed to coordinate structure across patch boundaries. The cross-attention gates learn to use backbone features (gate values settle around 0.3–0.5), but the features themselves lack the spatial resolution to guide local patch decisions.</p>
+<h2 id="open-questions" dir="auto">Open questions</h2>
+<p dir="auto">Two distinct problems remain unsolved:</p>
+<h3 id="1-why-are-patch-boundaries-still-visible" dir="auto">1. Why are patch boundaries still visible?</h3>
+<p dir="auto">The trio context gives each patch three immediate neighbors, and RePaint conditioning re-injects them at every denoising step. Yet seam artifacts persist. The model learns to match texture and color across borders, but fine-grained continuity (edges, gradients, high-frequency detail) breaks at patch boundaries. Possible directions:</p>
+<ul dir="auto">
+<li><strong>Overlapping patches with blending.</strong> Generate patches with overlap and blend the overlapping regions, so each patch has direct pixel-level continuity with more than three neighbors.</li>
+<li><strong>Boundary continuity loss.</strong> An explicit loss on patch edges, as attempted in the <a href="https://enazari.github.io/projects/trio-diffusion/" rel="nofollow">previous version</a>, which used pixel-level MSE and gradient-based MSE (Sobel filters) at boundaries. That version reduced seams but did not eliminate them; revisiting with stronger formulations (adversarial boundary discriminator, perceptual loss at edges) may help.</li>
+</ul>
+<h3 id="2-why-dont-coherent-objects-emerge-across-multiple-trio-blocks" dir="auto">2. Why don't coherent objects emerge across multiple trio blocks?</h3>
+<p dir="auto">The model generates plausible textures and learns position-dependent color statistics, but never forms recognizable structures: no trees, no buildings, no objects that span more than one patch. Each patch is generated in a 2×2 window with at most three neighbors; any structural plan must survive a chain of locally generated patches, and it does not. Possible directions:</p>
+<ul dir="auto">
+<li><strong>Hierarchical latent planning.</strong> Generate a coarse low-resolution layout of the full image first, then condition each patch on its corresponding region. This gives each patch access to global structure without expanding the 2×2 window.</li>
+<li><strong>Multi-scale context windows.</strong> Instead of (or alongside) CLIP/DINOv2, feed the model a downsampled view of the full canvas generated so far, in addition to the three high-resolution neighbor patches.</li>
+</ul>
+<p dir="auto">I invite you to pick up where it leaves off. If you have ideas or want to build on this, please reach out.</p>
+<hr>
+<details>
+<summary><strong><a id="full-generation-gallery"></a>Full generation gallery</strong></summary>
+<h3 id="progressive-generation-no-seed-image" dir="auto">Progressive generation (no seed image)</h3>
+<p dir="auto">The model generates from pure noise, re-encoding the partial canvas with the backbone at each step.</p>
+<h4 id="clip-vit-b32-10k" dir="auto">CLIP ViT-B/32 (10K)</h4>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip_progressive_s1.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip_progressive_s1.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip_progressive_s2.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip_progressive_s2.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip_progressive_s3.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip_progressive_s3.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip_progressive_s4.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip_progressive_s4.webp" width="170"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><em>seed 1</em></td>
+    <td align="center"><em>seed 2</em></td>
+    <td align="center"><em>seed 3</em></td>
+    <td align="center"><em>seed 4</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<h4 id="dinov2-vit-b14-10k" dir="auto">DINOv2 ViT-B/14 (10K)</h4>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_progressive_s2.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_progressive_s2.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_progressive_s3.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_progressive_s3.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_progressive_s6.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_progressive_s6.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_progressive_s7.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_progressive_s7.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_progressive_s8.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_progressive_s8.webp" width="170"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><em>seed 2</em></td>
+    <td align="center"><em>seed 3</em></td>
+    <td align="center"><em>seed 6</em></td>
+    <td align="center"><em>seed 7</em></td>
+    <td align="center"><em>seed 8</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_progressive_s9.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_progressive_s9.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino_large_progressive_floral.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino_large_progressive_floral.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_progressive_s11.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_progressive_s11.webp" width="170"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><em>seed 9</em></td>
+    <td align="center"><em>seed 10</em></td>
+    <td align="center"><em>seed 11</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<h3 id="seed-conditioned-generation" dir="auto">Seed-conditioned generation</h3>
+<p dir="auto">Each row: seed image → CLIP (10K) output → DINOv2 (10K) output.</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <th>📷 Seed (real photo)</th>
+    <th> CLIP (10K)</th>
+    <th> DINOv2 (10K)</th>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_umbrella.webp"><img decoding="async" loading="lazy" height="226" src="img/seed_umbrella.webp" width="170"></a><br><em>Umbrella</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip10k_seed_umbrella.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip10k_seed_umbrella.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_seed_umbrella.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_seed_umbrella.webp" width="170"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_tulip.webp"><img decoding="async" loading="lazy" height="266" src="img/seed_tulip.webp" width="170"></a><br><em>Tulip</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip_seed_tulip.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip_seed_tulip.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino_seed_tulip.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino_seed_tulip.webp" width="170"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_flower.webp"><img decoding="async" loading="lazy" height="108" src="img/seed_flower.webp" width="170"></a><br><em>Flower</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip_seed_flower.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip_seed_flower.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino_seed_flower.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino_seed_flower.webp" width="170"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_leaf.webp"><img decoding="async" loading="lazy" height="278" src="img/seed_leaf.webp" width="170"></a><br><em>Leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip10k_seed_leaf.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip10k_seed_leaf.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino_seed_leaf.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino_seed_leaf.webp" width="170"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_cat.webp"><img decoding="async" loading="lazy" height="255" src="img/seed_cat.webp" width="170"></a><br><em>Cat</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip10k_seed_cat.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip10k_seed_cat.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_seed_cat.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_seed_cat.webp" width="170"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_trunk.webp"><img decoding="async" loading="lazy" height="284" src="img/seed_trunk.webp" width="170"></a><br><em>Trunk</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip10k_seed_trunk.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip10k_seed_trunk.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_seed_trunk.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_seed_trunk.webp" width="170"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_purple.webp"><img decoding="async" loading="lazy" height="259" src="img/seed_purple.webp" width="170"></a><br><em>Purple</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip10k_seed_purple.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip10k_seed_purple.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_seed_purple.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_seed_purple.webp" width="170"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_blurred.webp"><img decoding="async" loading="lazy" height="254" src="img/seed_blurred.webp" width="170"></a><br><em>Blurred</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_clip10k_seed_blurred.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_clip10k_seed_blurred.webp" width="170"></a></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/gallery_dino10k_seed_blurred.webp"><img decoding="async" loading="lazy" height="170" src="img/gallery_dino10k_seed_blurred.webp" width="170"></a></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<p dir="auto">Seed images by <a href="https://unsplash.com/@itsomidarmin" rel="nofollow">@itsomidarmin</a>.</p>
+</details>
+<details>
+<summary><strong><a id="design-decisions"></a>Design Decisions (15 documented choices with rationale)</strong></summary>
+<h3 id="spatial-inpainting-format" dir="auto">Spatial inpainting format</h3>
+<p dir="auto">The model input is <code class="notranslate">[B, 4, 2*bs, 2*bs]</code>: a 2×2 spatial block (3 RGB channels) with a binary mask (1 channel). The three known context patches sit at their true spatial positions (TL, TR, BL) and the bottom-right quadrant is the noisy target. This replaces an earlier design that channel-concatenated all four patches into <code class="notranslate">[B, 12, bs, bs]</code>, which destroyed spatial adjacency; a 3×3 conv kernel couldn't see across patch borders, causing visible seams. With spatial layout, standard convolutions naturally learn seamless transitions at boundaries. This is the same format used by Stable Diffusion Inpainting and LDM Inpainting.</p>
+<h3 id="repaint-conditioning-1" dir="auto">RePaint conditioning</h3>
+<p dir="auto">At every denoising step, the known regions (TL, TR, BL) are replaced with their correctly-noised clean values: <code class="notranslate">sqrt(alpha_t) * x_known + sqrt(1 - alpha_t) * noise</code>. This provides persistent context throughout the reverse process, rather than injecting it once at the input and hoping it survives. Without this, context information degraded through the denoising steps and the model had to simultaneously denoise and remember context. From RePaint (Lugmayr et al., CVPR 2022).</p>
+<h3 id="tanh-gated-cross-attention" dir="auto">Tanh-gated cross-attention</h3>
+<p dir="auto">Cross-attention output is scaled by <code class="notranslate">tanh(gate)</code> where <code class="notranslate">gate</code> is a learnable scalar. Initially tried <code class="notranslate">gate_init=0.0</code> (zero-init, as in ControlNet); the idea was to let the model learn spatial texture first, then gradually incorporate CLIP. This failed: combined with CFG dropout, zero-init created a starvation equilibrium where CLIP never received gradients and gates stayed at zero for 500 epochs. The fix was <code class="notranslate">gate_init=0.5</code> (so <code class="notranslate">tanh(0.5) ≈ 0.46</code>), giving CLIP meaningful influence from epoch 1 while still allowing gates to close if unhelpful.</p>
+<h3 id="decoupled-cfg-dropout" dir="auto">Decoupled CFG dropout</h3>
+<p dir="auto">CFG dropout only swaps the backbone embedding for a learned unconditional embedding; spatial context is always preserved. An earlier version zeroed both spatial context and backbone simultaneously during dropout, which coupled two independent signals. The CFG guidance direction now purely measures "what the backbone adds on top of spatial context."</p>
+<h3 id="learned-unconditional-embedding" dir="auto">Learned unconditional embedding</h3>
+<p dir="auto">The unconditional embedding for classifier-free guidance is a learnable <code class="notranslate">nn.Parameter</code> on the model, not a precomputed encoding. An earlier version passed a grey image through CLIP, but uniform grey is out-of-distribution for CLIP; it produced degenerate tokens. The learned embedding lets the model discover what "no backbone conditioning" means in embedding space.</p>
+<h3 id="context-noise-augmentation" dir="auto">Context noise augmentation</h3>
+<p dir="auto">During training, Gaussian noise is added to context patches with probability <code class="notranslate">context_noise_prob=0.3</code> and scale up to <code class="notranslate">context_noise_scale=0.2</code>. This simulates the imperfect context encountered during autoregressive generation, where context patches are model-generated rather than ground truth. Without this, errors compound across patches; the model was never trained on imperfect context, so each generation step amplifies drift.</p>
+<h3 id="context-patch-dropout" dir="auto">Context patch dropout</h3>
+<p dir="auto">For 1/3 of training samples, 1, 2, or all 3 context patches are zeroed out (chosen uniformly). This teaches the model to generate from partial or no local context, matching edge and corner conditions during autoregressive generation; the very first patch has no neighbors, edge patches have only 1–2.</p>
+<h3 id="grey-border-padding" dir="auto">Grey border padding</h3>
+<p dir="auto">A grey ribbon is added to the top and left of each training image. During autoregressive generation, the first row and first column of patches have no top or left neighbors; those positions are filled with zeros (grey in normalized space). Without exposing the model to grey-filled context during training, it would never learn how to start generation from an empty canvas. The padding ensures that grey-bordered patches appear naturally in the training distribution.</p>
+<h3 id="per-pixel-coordinate-channels" dir="auto">Per-pixel coordinate channels</h3>
+<p dir="auto">Two normalized coordinate maps (Y, X) are concatenated to the model input, changing shape from <code class="notranslate">[B, 4, H, W]</code> to <code class="notranslate">[B, 6, H, W]</code>. Each pixel knows its absolute position in the image grid. This complements the coarser per-patch position encoding and follows Patch Diffusion (Wang et al., NeurIPS 2023).</p>
+<h3 id="position-encoding-via-time-embedding" dir="auto">Position encoding via time embedding</h3>
+<p dir="auto">Each patch's normalized grid position <code class="notranslate">(row/grid_h, col/grid_w)</code> is encoded with sinusoidal embeddings, processed through an MLP, and added to the time embedding. This piggybacks on the existing AdaGN pathway that already injects timestep into every ResidualBlock; zero architectural changes needed. Without position encoding, the model had no idea where in the image it was generating, producing locally plausible but globally incoherent images.</p>
+<h3 id="dilated-depthwise-convolutions-at-32x32" dir="auto">Dilated depthwise convolutions at 32x32</h3>
+<p dir="auto">Self-attention only operates at 16×16 and deeper. Skip connections from 32×32 carry features with ~9px effective receptive field, too small to cross the quadrant boundary at position 16. Full self-attention at 32×32 caused OOM. Dilated depthwise convolutions (dilation 4 and 8) expand the receptive field to 16+ pixels with negligible memory cost (~7K params), giving the decoder cross-quadrant awareness via skip connections.</p>
+<h3 id="multi-pass-refinement" dir="auto">Multi-pass refinement</h3>
+<p dir="auto">After the initial raster-scan pass, refinement passes re-generate every patch using full-canvas context. Early patches in the first pass have minimal context (mostly padding); refinement gives them the complete scene. Each pass re-encodes the canvas with CLIP for updated global context.</p>
+<h3 id="teacher-forcing-schedule" dir="auto">Teacher forcing schedule</h3>
+<p dir="auto">Training uses teacher forcing: context patches are always ground truth. Context noise augmentation (see above) partially bridges the train/test gap, but a curriculum that gradually replaces ground truth context with model-generated context during training could further reduce exposure bias.</p>
+<h3 id="classifier-free-guidance-scale" dir="auto">Classifier-free guidance scale</h3>
+<p dir="auto">CFG scale is set to 2.0 at inference. Higher values (5.0+) oversaturate colors and amplify artifacts. Lower values (1.0) produce muted, less coherent results. The sweet spot was found empirically.</p>
+<h3 id="training-on-300010000-coco-images" dir="auto">Training on 3,000–10,000 COCO images</h3>
+<p dir="auto">Deliberately small datasets to test whether the architecture can learn patch-level generation without massive data. The model memorizes training images at the patch level but generalizes texture and color statistics to unseen images. Scaling to larger datasets is straightforward: just point <code class="notranslate">DATASET_PATH</code> to a larger folder.</p>
+</details>
+<details>
+<summary><strong>Setup &amp; Usage</strong></summary>
+<h3 id="setup" dir="auto">Setup</h3>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">conda env create -f environment.yaml
+conda activate trio
+cp .env.example .env   <span class="pl-c"><span class="pl-c">#</span> edit with your dataset path</span></pre></div>
+<p dir="auto">The dataset is any folder of images (<code class="notranslate">.jpg</code>, <code class="notranslate">.png</code>, <code class="notranslate">.bmp</code>, <code class="notranslate">.tiff</code>, <code class="notranslate">.webp</code>). No labels required; just point <code class="notranslate">DATASET_PATH</code> in <code class="notranslate">.env</code> to the folder. Images must be at least 256×256.</p>
+<h3 id="training-1" dir="auto">Training</h3>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate"><span class="pl-c"><span class="pl-c">#</span> Single GPU</span>
+python train.py --config clip_10k
+
+<span class="pl-c"><span class="pl-c">#</span> Multi-GPU</span>
+accelerate launch train.py --config clip_10k</pre></div>
+<p dir="auto">Training creates a session folder under <code class="notranslate">sessions/</code> with checkpoints, evaluations, and loss history.</p>
+<h3 id="generation" dir="auto">Generation</h3>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">python scripts/generate.py sessions/<span class="pl-k">&lt;</span>session_dir<span class="pl-k">&gt;</span>/</pre></div>
+<p dir="auto">See <code class="notranslate">generation/generate.sh</code> for batch generation across all modes (progressive, seed-conditioned, text-conditioned).</p>
+<h3 id="slurm-cluster" dir="auto">SLURM cluster</h3>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate"><span class="pl-c1">cd</span> hpc <span class="pl-k">&amp;&amp;</span> bash _download_models.sh <span class="pl-k">&amp;&amp;</span> <span class="pl-c1">cd</span> ..   <span class="pl-c"><span class="pl-c">#</span> pre-download weights (login node)</span>
+bash hpc/clip.sh                               <span class="pl-c"><span class="pl-c">#</span> reads .env, self-submits via sbatch</span></pre></div>
+</details>
+<details>
+<summary><strong><a id="seamless-gallery"></a>Seamless outputs gallery — later experiments (C27 &amp; C21 v3)</strong></summary>
+<p dir="auto">Outputs from two follow-up experiments. Both models generate seamless canvases with no visible patch boundaries. Creating coherent objects remains the open problem.</p>
+<p dir="auto"><strong>C27</strong> adds a training schedule that progressively destroys the canvas-guide spatial scaffold, forcing the model to generate structure from scratch. <strong>C21 v3</strong> (DINOv2 backbone, 700 epochs) trains a single model in plan mode and detail mode, and is tested here across multiple inference modes.</p>
+<h3 id="seedless--no-input-image-no-canvas-guide" dir="auto">Seedless — no input image, no canvas guide</h3>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c27t1_seedless_1024_gen_s3.webp"><img decoding="async" loading="lazy" height="380" src="img/c27t1_seedless_1024_gen_s3.webp" width="380"></a><br><em>C27, seedless 1024², s3</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M2_plan_uncond_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M2_plan_uncond_s1.webp" width="380"></a><br><em>C21 v3, plan-uncond, s1</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M2_plan_uncond_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M2_plan_uncond_s2.webp" width="380"></a><br><em>C21 v3, plan-uncond, s2</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M2_plan_uncond_s7.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M2_plan_uncond_s7.webp" width="380"></a><br><em>C21 v3, plan-uncond, s7</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M1_progressive_s5.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M1_progressive_s5.webp" width="380"></a><br><em>C21 v3, progressive, s5</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_wild_J_noise-fbm_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_wild_J_noise-fbm_s1.webp" width="380"></a><br><em>C21 v3, fBm noise prior, s1</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21v3_seedless_512_gen_s4.webp"><img decoding="async" loading="lazy" height="380" src="img/c21v3_seedless_512_gen_s4.webp" width="380"></a><br><em>C21 v3, seedless 512², s4</em></td>
+    <td></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<h3 id="image-seeded--with-canvas-guide" dir="auto">Image-seeded — with canvas guide</h3>
+<p dir="auto">The model receives a seed image as the DINOv2 embedding and a matching canvas guide (low-frequency spatial scaffold). Each row shows the seed image alongside a generated output.</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-cat.webp"><img decoding="async" loading="lazy" width="1600" height="2400" src="img/seed_omid-cat.webp"></a><br><em>Seed: cat</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M3_imgctx_omid-cat_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M3_imgctx_omid-cat_s1.webp" width="380"></a><br><em>Generated</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M3_imgctx_omid-leaf_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M3_imgctx_omid-leaf_s1.webp" width="380"></a><br><em>Generated, s1</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M3_imgctx_omid-leaf_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M3_imgctx_omid-leaf_s2.webp" width="380"></a><br><em>Generated, s2</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_standard_A_M3_omid-leaf_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_standard_A_M3_omid-leaf_s1.webp" width="380"></a><br><em>Generated, s3</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_standard_A_M3_omid-leaf_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_standard_A_M3_omid-leaf_s2.webp" width="380"></a><br><em>Generated, s4</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_standard_A_M3_omid-leaf_s4.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_standard_A_M3_omid-leaf_s4.webp" width="380"></a><br><em>Generated, s5</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-umbrella.webp"><img decoding="async" loading="lazy" width="1600" height="2133" src="img/seed_omid-umbrella.webp"></a><br><em>Seed: umbrella</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M3_imgctx_omid-umbrella_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M3_imgctx_omid-umbrella_s1.webp" width="380"></a><br><em>Generated, s1</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-umbrella.webp"><img decoding="async" loading="lazy" width="1600" height="2133" src="img/seed_omid-umbrella.webp"></a><br><em>Seed: umbrella</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_dino_fullinf_M3_imgctx_omid-umbrella_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_dino_fullinf_M3_imgctx_omid-umbrella_s2.webp" width="380"></a><br><em>Generated, s2</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-umbrella.webp"><img decoding="async" loading="lazy" width="1600" height="2133" src="img/seed_omid-umbrella.webp"></a><br><em>Seed: umbrella</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_dino_standard_A_M3_omid-umbrella_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_dino_standard_A_M3_omid-umbrella_s2.webp" width="380"></a><br><em>Generated, s3</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-blurred.webp"><img decoding="async" loading="lazy" width="1600" height="2396" src="img/seed_omid-blurred.webp"></a><br><em>Seed: blurred</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_standard_A_M3_omid-blurred_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_standard_A_M3_omid-blurred_s1.webp" width="380"></a><br><em>Generated, s1</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-blurred.webp"><img decoding="async" loading="lazy" width="1600" height="2396" src="img/seed_omid-blurred.webp"></a><br><em>Seed: blurred</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_dino_standard_A_M3_omid-blurred_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_dino_standard_A_M3_omid-blurred_s1.webp" width="380"></a><br><em>Generated, s2</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-purple.webp"><img decoding="async" loading="lazy" width="1600" height="2437" src="img/seed_omid-purple.webp"></a><br><em>Seed: purple</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_standard_A_M3_omid-purple_s3.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_standard_A_M3_omid-purple_s3.webp" width="380"></a><br><em>Generated, s1</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-purple.webp"><img decoding="async" loading="lazy" width="1600" height="2437" src="img/seed_omid-purple.webp"></a><br><em>Seed: purple</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_dino_standard_A_M3_omid-purple_s3.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_dino_standard_A_M3_omid-purple_s3.webp" width="380"></a><br><em>Generated, s2</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-trunk.webp"><img decoding="async" loading="lazy" width="1600" height="2669" src="img/seed_omid-trunk.webp"></a><br><em>Seed: trunk</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_standard_A_M3_omid-trunk_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_standard_A_M3_omid-trunk_s2.webp" width="380"></a><br><em>Generated</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_3043.webp"><img decoding="async" loading="lazy" width="704" height="512" src="img/seed_3043.webp"></a><br><em>Seed: COCO image</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21v3_imgseed_3043_gen_s4.webp"><img decoding="async" loading="lazy" height="380" src="img/c21v3_imgseed_3043_gen_s4.webp" width="380"></a><br><em>Generated</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<h3 id="image-seeded--no-canvas-guide" dir="auto">Image-seeded — no canvas guide</h3>
+<p dir="auto">The DINOv2 embedding comes from a seed image but no spatial scaffold is provided. The model must generate structure from the embedding alone.</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-cat.webp"><img decoding="async" loading="lazy" width="1600" height="2400" src="img/seed_omid-cat.webp"></a><br><em>Seed: cat</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M4_imgctx_noguide_omid-cat_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M4_imgctx_noguide_omid-cat_s2.webp" width="380"></a><br><em>Generated</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M4_imgctx_noguide_omid-leaf_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M4_imgctx_noguide_omid-leaf_s1.webp" width="380"></a><br><em>Generated</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-umbrella.webp"><img decoding="async" loading="lazy" width="1600" height="2133" src="img/seed_omid-umbrella.webp"></a><br><em>Seed: umbrella</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M4_imgctx_noguide_omid-umbrella_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M4_imgctx_noguide_omid-umbrella_s1.webp" width="380"></a><br><em>Generated</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<h3 id="plan-mode" dir="auto">Plan mode</h3>
+<p dir="auto">The model generates a low-resolution plan first, then refines it autoregressively. Text prompts use CLIP text embeddings; image prompts use DINOv2.</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_planinf_B_imgclip_omid-leaf_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_planinf_B_imgclip_omid-leaf_s1.webp" width="380"></a><br><em>Image plan: leaf</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M5_imgctx_plan_omid-leaf_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M5_imgctx_plan_omid-leaf_s1.webp" width="380"></a><br><em>Image + plan, s1</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M5_imgctx_plan_omid-leaf_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M5_imgctx_plan_omid-leaf_s2.webp" width="380"></a><br><em>Image + plan, s2</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_arbsize_E_cascade128_omid-leaf_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_arbsize_E_cascade128_omid-leaf_s1.webp" width="380"></a><br><em>Cascade plan 128→512, s1</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Seed: leaf</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_arbsize_E_cascade128_omid-leaf_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_arbsize_E_cascade128_omid-leaf_s2.webp" width="380"></a><br><em>Cascade plan 128→512, s2</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-umbrella.webp"><img decoding="async" loading="lazy" width="1600" height="2133" src="img/seed_omid-umbrella.webp"></a><br><em>Seed: umbrella</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_fullinf_M5_imgctx_plan_omid-umbrella_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_fullinf_M5_imgctx_plan_omid-umbrella_s1.webp" width="380"></a><br><em>Image + plan</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-cat.webp"><img decoding="async" loading="lazy" width="1600" height="2400" src="img/seed_omid-cat.webp"></a><br><em>Seed: cat</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_arbsize_E_cascade128_omid-cat_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_arbsize_E_cascade128_omid-cat_s2.webp" width="380"></a><br><em>Cascade plan 128→512</em></td>
+  </tr>
+  <tr>
+    <td align="center"><em>Text: "building"</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_planinf_A_text_building_s1.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_planinf_A_text_building_s1.webp" width="380"></a><br><em>Generated</em></td>
+  </tr>
+  <tr>
+    <td align="center"><em>Text: "sunset lake"</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_planinf_A_text_sunset_lake_s2.webp"><img decoding="async" loading="lazy" height="380" src="img/c21_sweep_planinf_A_text_sunset_lake_s2.webp" width="380"></a><br><em>Generated</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+<h3 id="mismatched-clip--canvas-guide" dir="auto">Mismatched CLIP + canvas guide</h3>
+<p dir="auto">The embedding comes from one image and the canvas guide from a different image. Each row shows both inputs and the generated output.</p>
+<markdown-accessiblity-table><table role="table">
+  <tbody><tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-purple.webp"><img decoding="async" loading="lazy" width="1600" height="2437" src="img/seed_omid-purple.webp"></a><br><em>CLIP embedding</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-blurred.webp"><img decoding="async" loading="lazy" width="1600" height="2396" src="img/seed_omid-blurred.webp"></a><br><em>Canvas guide</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_wild_H_CLIP-omid-purple_GUIDE-omid-blurred_s1.webp"><img decoding="async" loading="lazy" height="245" src="img/c21_sweep_wild_H_CLIP-omid-purple_GUIDE-omid-blurred_s1.webp" width="245"></a><br><em>Generated</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>CLIP embedding</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-umbrella.webp"><img decoding="async" loading="lazy" width="1600" height="2133" src="img/seed_omid-umbrella.webp"></a><br><em>Canvas guide</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_wild_H_CLIP-omid-leaf_GUIDE-omid-umbrella_s2.webp"><img decoding="async" loading="lazy" height="245" src="img/c21_sweep_wild_H_CLIP-omid-leaf_GUIDE-omid-umbrella_s2.webp" width="245"></a><br><em>Generated</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-umbrella.webp"><img decoding="async" loading="lazy" width="1600" height="2133" src="img/seed_omid-umbrella.webp"></a><br><em>CLIP embedding</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Canvas guide</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_sweep_wild_H_CLIP-omid-umbrella_GUIDE-omid-leaf_s2.webp"><img decoding="async" loading="lazy" height="245" src="img/c21_sweep_wild_H_CLIP-omid-umbrella_GUIDE-omid-leaf_s2.webp" width="245"></a><br><em>Generated</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-purple.webp"><img decoding="async" loading="lazy" width="1600" height="2437" src="img/seed_omid-purple.webp"></a><br><em>DINOv2 embedding</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-blurred.webp"><img decoding="async" loading="lazy" width="1600" height="2396" src="img/seed_omid-blurred.webp"></a><br><em>Canvas guide</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_dino_wild_H_EMB-omid-purple_GUIDE-omid-blurred_s1.webp"><img decoding="async" loading="lazy" height="245" src="img/c21_dino_wild_H_EMB-omid-purple_GUIDE-omid-blurred_s1.webp" width="245"></a><br><em>Generated</em></td>
+  </tr>
+  <tr>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-umbrella.webp"><img decoding="async" loading="lazy" width="1600" height="2133" src="img/seed_omid-umbrella.webp"></a><br><em>DINOv2 embedding</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/seed_omid-leaf.webp"><img decoding="async" loading="lazy" width="1600" height="2612" src="img/seed_omid-leaf.webp"></a><br><em>Canvas guide</em></td>
+    <td align="center"><a target="_blank" rel="noopener noreferrer" href="img/c21_dino_wild_H_EMB-omid-umbrella_GUIDE-omid-leaf_s1.webp"><img decoding="async" loading="lazy" height="245" src="img/c21_dino_wild_H_EMB-omid-umbrella_GUIDE-omid-leaf_s1.webp" width="245"></a><br><em>Generated</em></td>
+  </tr>
+</tbody></table></markdown-accessiblity-table>
+</details></article><p class="rtop"><a class="btn" href="https://github.com/enazari/Trio-Diffusion">View on GitHub</a></p></div></div></main>
+</body></html>

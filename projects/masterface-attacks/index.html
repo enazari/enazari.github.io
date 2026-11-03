@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Masterface Attacks · Ehsan Nazari</title><meta name="description" content="Nine adversarial embeddings impersonate 47% of identities in a face verification model scoring 99.65% on benchmark — exposing the gap between pairwise accuracy and real security.">
+<link rel="icon" type="image/png" href="../../favicon.png"><link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="google-site-verification" content="bXUR7A0NablAs6DUwHXGGxXQYOcxzMlt48DhU76oiv8">
+<meta property="og:type" content="website"><meta property="og:title" content="Masterface Attacks · Ehsan Nazari"><meta property="og:description" content="Nine adversarial embeddings impersonate 47% of identities in a face verification model scoring 99.65% on benchmark — exposing the gap between pairwise accuracy and real security.">
+<meta property="og:image" content="https://enazari.github.io/img/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">
+<style>:root{--bg:#fff;--fg:#1a1a1a;--mute:#6b6b6b;--line:#e6e6e6;--a:#0b5fd3;--road:#0a0a0a;--edge:transparent;--rail:#9aa0a6;--shadow:rgba(0,0,0,.16)}
+@media(prefers-color-scheme:dark){:root{--bg:#111;--fg:#e8e8e8;--mute:#9a9a9a;--line:#2a2a2a;--a:#7db3ff;--road:#000;--edge:#3a3a3a;--rail:#6f757c;--shadow:rgba(0,0,0,.6)}}
+*{box-sizing:border-box}
+html{overflow-y:scroll;font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--fg);-webkit-text-size-adjust:100%}
+body{margin:0 auto;max-width:60rem;padding:clamp(2rem,9vh,5rem) clamp(1.5rem,8vw,5rem) 4rem}
+a{color:var(--a);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2{line-height:1.25;margin:0}h1{font-size:1.7rem}h2{font-size:1.05rem;margin:0 0 .9rem;color:var(--mute);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+nav{display:flex;gap:1.25rem;flex-wrap:wrap;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:2rem}
+nav a{color:var(--fg)}nav a[aria-current]{font-weight:600}nav .home{margin-right:auto;font-weight:600}
+.narrow{max-width:42rem}
+body.hb{max-width:none}.col{max-width:60rem;margin:0 auto}
+.sub{color:var(--mute);margin:.35rem 0 0}
+.links{display:flex;gap:.4rem 1rem;flex-wrap:wrap;margin:.75rem 0 1rem}
+.hero{max-width:100%;height:auto;border-radius:.4rem;margin:1rem 0}
+.pub{padding:.9rem 0;border-top:1px solid var(--line)}.pub small{display:block;color:var(--mute)}
+.pub-h{margin-top:2rem}
+.btn{display:inline-block;border:1px solid var(--line);border-radius:.4rem;padding:.4rem .9rem;color:var(--fg)}
+footer{margin-top:3rem;color:var(--mute);font-size:.85rem}
+.home .work p{margin:0}.home .work ul{margin:.35rem 0 0;padding-left:1.1rem}.home .work li{margin:.3rem 0 0}
+table{border-collapse:collapse;font-size:.9rem;margin:.5rem 0 1rem}th,td{text-align:left;padding:.35rem .9rem .35rem 0;border-bottom:1px solid var(--line)}th{color:var(--mute);font-weight:600}
+@media(min-width:60rem){
+.land{grid-template-columns:24rem 1fr;gap:4rem;align-items:start}
+.me{position:sticky;top:1.5rem}.me img{width:12rem}}
+
+.intro h1{font-size:clamp(2rem,5.3333vw,4rem);line-height:1.1}.home .intro h1.bx{margin-bottom:clamp(20px,3.3333vw,40px)}.intro h1 .bl{display:inline-block;width:0;height:0}.intro .sub{font-size:.9rem}
+.plain{list-style:none;margin:0;padding:0}
+.home .bx{position:relative;outline:1px solid #e0457b;outline-offset:2px;box-sizing:border-box;margin:0;padding:.4rem .9rem}
+.home .ph{display:block;padding:.45rem}
+.home .ph img{display:block;width:4.6rem;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:.4rem}
+.home .intro{display:grid;grid-template-columns:auto 1fr;gap:.8rem 1.1rem;align-items:start}
+.home .ph{grid-row:1/5}
+.home .intro .bx{justify-self:start}
+.home h2.bx{width:fit-content;margin-top:1.2rem}
+.home .plain{display:flex;flex-wrap:wrap;gap:1.6rem;margin-top:.8rem}
+.home .plain a.bx,.home .foot a.bx{display:inline-block;padding:.35rem 1rem;color:var(--fg)}
+.home .foot a.bx{color:var(--a)}
+.home .plain a.bx.tn{padding:0;outline:0;display:inline-block}
+.tn{--tw:clamp(22px,3.6667vw,44px);--td:clamp(21px,3.5vw,42px)}
+.tn span{display:block;border:1px solid #e0457b;padding:.35rem 1rem calc(.35rem + var(--td) + 2px);clip-path:polygon(0 0,100% 0,100% 100%,calc(50% + var(--tw) / 2) 100%,calc(50% + var(--tw) / 2) calc(100% - var(--td)),calc(50% - var(--tw) / 2) calc(100% - var(--td)),calc(50% - var(--tw) / 2) 100%,0 100%)}
+.tn::before{content:"";position:absolute;left:50%;bottom:0;width:var(--tw);height:var(--td);margin-left:calc(var(--tw) / -2);background:#14171d;border:2px solid var(--c);border-bottom:0;box-sizing:border-box}
+.home .foot{gap:.8rem;margin-top:3.6rem}
+.home:not(.lx) .plain{gap:4.5rem 1.6rem}
+.home:not(.lx) .tn span{display:grid;grid-template-columns:3.25rem 1fr;gap:.1rem .7rem;align-items:center;width:14rem;text-align:left}
+.home:not(.lx) .tn .th{grid-row:1/3;width:3.25rem;height:3.25rem;object-fit:cover;border-radius:.35rem;display:block}
+.home:not(.lx){--g:1.4rem}@media(max-width:59.99rem){.home:not(.lx){--g:max(36px,2.2rem)}}.home:not(.lx) .plain li{display:flex}.home:not(.lx) .tn span{height:100%;box-sizing:border-box}
+.home:not(.lx) .tn b{font-size:.92rem;line-height:1.25;font-weight:600}.home:not(.lx) .tn small{color:var(--mute);font-size:.74rem;line-height:1.3}
+/* the current look in the split arrangement: text on the left, projects on the right (no yard, no divider) */
+@media(min-width:60rem){
+.home:not(.lx) .col{max-width:90rem;display:grid;grid-template-columns:clamp(23.5rem,32vw,40rem) 1fr;grid-template-rows:auto 1fr;gap:0 2.5rem;align-items:start}
+.home:not(.lx) .right{grid-area:1/2/3/3}
+.home:not(.lx) .intro{grid-area:1/1;grid-template-columns:auto 1fr;gap:0 1rem;align-items:end}
+.home:not(.lx) .ph{grid-row:auto;margin-bottom:var(--g)}
+.home:not(.lx) .ph img{width:clamp(6rem,9vw,11rem)}
+
+.home:not(.lx) .intro h1{font-size:clamp(1.9rem,2.4vw,3.4rem);white-space:nowrap;align-self:start}
+.home:not(.lx) .intro p.bx,.home:not(.lx) .intro .work{grid-column:1/-1;margin-top:var(--g)}.home:not(.lx) .intro h1+p.bx{margin-top:0}
+.home:not(.lx) .foot{grid-area:2/1;margin-top:var(--g)}
+.home:not(.lx) h2.sel{margin-top:0}
+.home:not(.lx) .plain{margin-top:1.5rem}
+.home.free:not(.lx) .bx{grid-area:auto!important;margin:0!important}}
+/* the chosen design (Nov 2): dashed borders, sharp corners, white boxes on a grid */
+:root{--gridline:#dcdcd6}
+@media(prefers-color-scheme:dark){:root{--gridline:#2a2a2a}}
+html:not(:has(main.lx)){background:linear-gradient(var(--gridline) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,var(--gridline) 1px,transparent 1px) 0 0/24px 24px,var(--bg)}
+.home:not(.lx) .bx{outline:0;border:1px dashed var(--mute);border-radius:0}
+.home:not(.lx) a.bx.tn{border:0;background:none}
+.home:not(.lx) .tn span{border:1px dashed var(--mute);border-radius:0}
+.home:not(.lx) .ph img{border-radius:0}
+/* the dashes are drawn, not left to the browser: its dashed border stretches the dashes to fit each side, so the sides of a box differ */
+.home:not(.lx) .bx:not(.tn),.home:not(.lx) .tn span,body.in nav a,body.in .btn,body.in .sheet,body.in .pcard,body.in h2.pub-h{border:1px solid transparent;background-color:var(--bg);background-image:repeating-linear-gradient(90deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(90deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(180deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(180deg,var(--mute) 0 4px,transparent 0 7px);background-position:left top,left bottom,left top,right top;background-size:100% 1px,100% 1px,1px 100%,1px 100%;background-repeat:no-repeat;background-origin:border-box}
+.home:not(.lx) .intro{row-gap:0}.home:not(.lx) .ph{margin-bottom:var(--g)}.home:not(.lx) .intro h1.bx{margin-bottom:var(--g)}.home:not(.lx) .intro p.bx,.home:not(.lx) .intro .work{margin-top:var(--g)}.home:not(.lx) .intro h1+p.bx{margin-top:0}.home:not(.lx) .foot{margin-top:var(--g)}.home.free:not(.lx) .bx{margin:0!important}
+.home:not(.lx) .cap{max-width:25rem;margin:4rem 0 0;color:var(--mute);font-size:.78rem;line-height:1.5}
+@media(max-width:40rem){.home:not(.lx) .tn span{width:auto;grid-template-columns:2.4rem 1fr}.home:not(.lx) .tn .th{width:2.4rem;height:2.4rem}.home:not(.lx) .tn small{display:none}}
+@media(max-width:59.99rem){.home:not(.lx) .ph img{width:6.5rem}}
+@media(max-width:30rem){.home .intro{grid-template-columns:1fr}.home .ph{grid-row:auto}}
+.home.free .bx{margin:0}
+.home{position:relative}
+.rb{position:absolute;top:calc(-1 * clamp(2rem,9vh,5rem));right:calc(-1 * clamp(1.5rem,8vw,5rem));width:clamp(210px,35vw,420px);height:clamp(157.5px,26.25vw,315px);pointer-events:none;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 25%);mask-image:linear-gradient(to right,transparent 0,#000 25%)}
+.rb svg{display:block;width:100%;height:100%}
+.rb .rail{stroke:var(--rail)}
+.rbc{position:absolute;left:23.69%;top:17.65%;width:49.67%;height:66.22%}
+@media(max-width:91rem){.rbon .col{padding-top:170px}}
+.home.nopad .col{padding-top:0}
+.cars{position:absolute;left:0;pointer-events:none;z-index:100000}
+.carsl{position:absolute;left:0;top:0;overflow:hidden;pointer-events:none;z-index:100000;transform-origin:0 0;contain:layout style}.carsl div,.carsl canvas{position:absolute;left:0;top:0}.carsl .cs{width:34px;height:22px;background-size:100% 100%;transform-origin:17px 11px;will-change:transform}.carsl .cw{overflow:hidden}.carsl .rg{box-sizing:border-box;border:2.5px solid;border-radius:50%}.carsl .sp{box-sizing:border-box;border:2px solid #e8590c;border-radius:50%;animation:carsp .4s linear forwards}@keyframes carsp{from{transform:scale(var(--s));opacity:.9}to{transform:scale(1);opacity:0}}
+.carbtn,.cpbtns button{font:inherit;font-size:.8rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:.4rem;padding:.3rem .7rem;cursor:pointer}
+.carbtn.carfix{position:fixed;right:1rem;bottom:1rem;z-index:100001;color:var(--mute)}
+.carctl{display:flex;gap:.4rem;margin-top:.55rem}.carctl button{font:inherit;font-size:.78rem;line-height:1;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:0;padding:.35rem .7rem;cursor:pointer}.carctl .carbtn{display:inline-flex;align-items:center;padding:.3rem .45rem;color:var(--mute)}.carctl button:hover,.carctl .carbtn[aria-expanded=true]{color:var(--fg);border-color:var(--fg)}
+.carbtn[aria-expanded=true]{color:var(--fg)}
+.carpanel{position:fixed;z-index:100001;width:min(34rem,calc(100vw - 2rem));max-height:calc(100vh - 5rem);overflow:auto;box-sizing:border-box;padding:.8rem;background:var(--bg);border:1px solid var(--line);border-radius:.5rem;font-size:.8rem;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.carpanel{z-index:2147483000!important;overflow:auto;border:1px dashed var(--mute)!important;border-radius:0!important;box-shadow:0 6px 20px rgba(0,0,0,.08)!important}.carpanel[hidden]{display:none}.carpanel.fix{position:fixed;right:1rem;bottom:3.4rem}.cpsum{margin:0 0 .6rem}.cpmore summary{cursor:pointer;color:var(--mute);margin:.2rem 0 .5rem}
+.cphead{margin:0 0 .6rem;color:var(--mute);line-height:1.45}
+.cpbtns{display:flex;flex-wrap:wrap;gap:.4rem}
+.cpdrv{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .7rem}.cpdrv button{font:inherit;font-size:.8rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);padding:.3rem .7rem;cursor:pointer}.cpdrv button[aria-pressed=true]{border-color:var(--fg);font-weight:600}.cpdrv button:disabled{opacity:.5;cursor:progress}
+.cprate{display:flex;align-items:center;gap:.5rem;margin:.6rem 0 0}.cprate input{flex:1;max-width:12rem}
+.carpanel pre{margin:.5rem 0 0;font-size:.72rem;white-space:pre-wrap;color:var(--mute)}
+.cphud{margin:.5rem 0 0;min-height:1em;color:var(--mute)}
+.free{position:relative}.free .bx{position:absolute;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y pinch-zoom;transition:box-shadow .15s,scale .15s}.free .bx.grab,.free .bx.lift{will-change:transform}
+@media(hover:hover){.free .bx:hover{box-shadow:0 3px 12px var(--shadow)}}
+.free .bx.lift{scale:1.03;box-shadow:0 8px 22px var(--shadow)}
+.free .grab{cursor:grabbing;outline-color:#1a7f37}
+.free .bx:not(.tn),.free .tn span{background:var(--bg)}
+.foot{margin-top:1.5rem;display:flex;gap:.4rem 1rem;flex-wrap:wrap}
+
+/* project pages that mirror a GitHub README (readmes.py) */
+.readme{max-width:56rem}.rtop{margin:0 0 1.2rem}.readme .rtop:last-child{margin:2rem 0 0}
+.md{line-height:1.6;overflow-wrap:break-word}
+.md h1{font-size:2rem;line-height:1.25;margin:.4rem 0 1rem;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+.md h2{font-size:1.45rem;line-height:1.3;margin:2.2rem 0 .9rem;color:var(--fg);letter-spacing:normal;text-transform:none;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+.md h3{font-size:1.15rem;margin:1.7rem 0 .6rem}.md h4,.md h5,.md h6{font-size:1rem;margin:1.4rem 0 .5rem}
+.md p,.md ul,.md ol,.md blockquote,.md pre,.md table,.md details,.md .highlight{margin:0 0 1rem}
+.md li+li{margin-top:.25rem}.md img{max-width:100%;height:auto;vertical-align:middle}
+.md blockquote{margin-left:0;padding:0 1rem;color:var(--mute);border-left:.25rem solid var(--line)}
+.md code{font:.86em ui-monospace,SFMono-Regular,Menlo,Consolas,"DejaVu Sans Mono",monospace;background:color-mix(in srgb,var(--fg) 7%,transparent);padding:.15em .35em;border-radius:4px}
+.md pre{overflow:auto;padding:1rem;background:color-mix(in srgb,var(--fg) 5%,transparent);border-radius:6px;line-height:1.45}
+.md pre code{background:none;padding:0;font-size:.85rem}
+.md table{display:block;max-width:100%;width:max-content;overflow:auto;border-collapse:collapse}
+.md th,.md td{padding:.4rem .8rem;border:1px solid var(--line);vertical-align:top}.md th{font-weight:600}
+.md tr:nth-child(2n){background:color-mix(in srgb,var(--fg) 3%,transparent)}
+.md hr{border:0;border-top:1px solid var(--line);margin:1.6rem 0}.md summary{cursor:pointer}
+.md [align=center]{text-align:center}.md .sub{margin:-.4rem 0 1.2rem}
+.md .figs{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin:1.2rem 0 .5rem}.md .figs img{flex:1 1 0;min-width:4rem;border-radius:4px}
+.md .figcap{text-align:center;color:var(--mute);font-size:.88rem;margin:0 0 1.4rem}.md .pubbox{padding:.8rem 1rem;border-left:.25rem solid var(--line);background:color-mix(in srgb,var(--fg) 3%,transparent);margin:0 0 1rem}.md .pubbox p:last-child{margin:0}.md .katex-display{overflow-x:auto;overflow-y:hidden;padding:.25rem 0}
+.md .pl-c{color:#6e7781}.md .pl-c1,.md .pl-s .pl-v{color:#0550ae}.md .pl-e,.md .pl-en{color:#6639ba}.md .pl-ent{color:#116329}
+.md .pl-k{color:#cf222e}.md .pl-s,.md .pl-pds,.md .pl-sr{color:#0a3069}.md .pl-v,.md .pl-smi{color:#953800}
+@media(prefers-color-scheme:dark){.md .pl-c{color:#8b949e}.md .pl-c1{color:#79c0ff}.md .pl-e,.md .pl-en{color:#d2a8ff}.md .pl-ent{color:#7ee787}.md .pl-k{color:#ff7b72}.md .pl-s,.md .pl-pds,.md .pl-sr{color:#a5d6ff}.md .pl-v,.md .pl-smi{color:#ffa657}}
+
+/* the inner pages in the home page's design: grid paper, dashed square boxes, the text on one white sheet (the dashes: the rule above) */
+body.in{width:fit-content;max-width:min(60rem,100%)}body.in nav{gap:.5rem;flex-wrap:wrap;padding:0;border:0;margin-bottom:1.25rem}body.in .rtop{display:flex;flex-wrap:wrap;gap:.5rem}
+body.in nav a{padding:.35rem .9rem;color:var(--a)}body.in nav .home{color:var(--fg)}body.in nav a[aria-current]{color:var(--fg);font-weight:600}
+body.in .sheet{width:fit-content;max-width:100%;padding:clamp(1.2rem,3.5vw,2.6rem)}
+body.in .narrow{width:42rem;max-width:100%}body.in .readme{width:54rem;max-width:100%}
+body.in .btn{padding:.35rem .9rem;color:var(--a);border-radius:0}
+body.in nav a:hover,body.in .btn:hover,body.in .pcard:hover{text-decoration:none;box-shadow:0 3px 12px var(--shadow)}
+body.in h2.pub-h{width:fit-content;padding:.3rem .9rem;margin:2rem 0 .7rem;font-size:.92rem}body.in h1+h2.pub-h{margin-top:1.4rem}
+body.in footer{margin-top:1.25rem}
+@media(max-width:30rem){body.in{padding-left:1rem;padding-right:1rem}body.in nav{gap:.35rem}body.in nav a{padding:.3rem .55rem;font-size:.88rem}}
+.cards{list-style:none;margin:1.4rem 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1rem}
+.pcard{display:grid;grid-template-columns:3.25rem 1fr;grid-template-rows:auto 1fr;gap:.15rem .8rem;align-items:start;height:100%;padding:.8rem .9rem;color:var(--fg)}
+.pcard .th{grid-row:1/3;width:3.25rem;height:3.25rem;object-fit:cover;border-radius:.35rem}
+.pcard b{font-size:.95rem;line-height:1.3}.pcard small{color:var(--mute);font-size:.8rem;line-height:1.4}
+</style><link rel="stylesheet" href="../../katex/katex.min.css"></head><body class="in">
+<nav><a class="home" href="../../">Ehsan Nazari</a><a href="../../projects/">Projects</a><a href="../../publications/">Publications</a></nav>
+<main><div class=sheet><div class="readme"><p class="rtop"><a class="btn" href="https://github.com/enazari/Masterface-Attacks">View on GitHub</a></p><article class="md"><h1 id="masterface-attacks-on-face-verification" dir="auto">Masterface Attacks on Face Verification</h1>
+<blockquote>
+<p dir="auto"><strong>Pairwise Accuracy Is Not Security: Masterface Attacks Expose a Structural Vulnerability in Face Verification</strong><br>
+Ehsan Nazari, 2026<br>
+📄 Technical report: <a href="https://github.com/enazari/Masterface-Attacks/blob/master/technical_report.pdf">technical_report.pdf</a></p>
+</blockquote>
+<p dir="auto"><strong>Face verification</strong> asks whether two face images depict the same person. A model embeds each face as a vector and accepts a match when the two fall within a threshold distance. It powers phone unlock, online ID checks, and border control.</p>
+<h2 id="tldr" dir="auto">TL;DR</h2>
+<blockquote>
+<p dir="auto">You might assume that high pairwise verification accuracy implies a model is robust against adversaries. After all, a score like 99.65% on a face verification benchmark can create the impression that the system is secure.</p>
+</blockquote>
+<p dir="auto"><mark>It isn’t.</mark> Pairwise verification benchmarks were never designed to expose security vulnerabilities, and this report makes that gap concrete by showing how much attack surface can remain hidden behind today’s high-accuracy face verification models.</p>
+<p dir="auto"><strong>CosFace achieves 99.65% pairwise accuracy on LFW at FAR≈0.001, yet the same model can be fooled by nine optimization-crafted face embeddings that collectively impersonate 47.2% of LFW’s 5,749 identities</strong>; about 2,700 people. In each case, at least one of the nine embeddings is accepted as the same person under the verification threshold. This is not unique to one model: we observe the same pattern across ArcFace, CosFace, AdaFace-IR101, AdaFace-ViT, FaceNet-CASIA, and FaceNet-VGG2.</p>
+<h2 id="the-disconnect-at-a-glance" dir="auto">The disconnect at a glance</h2>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="img/fig_teaser.webp"><img decoding="async" width="1600" height="684" src="img/fig_teaser.webp" alt="Same model, three pipelines: accuracy barely moves; masterface coverage swings by two orders of magnitude."></a></p>
+<p dir="auto">CosFace under three pipeline configurations. Pairwise accuracy (left): uniformly ≈99.6% — the standard benchmark sees no difference. Masterface coverage (right): 47.2% → 0.23%, a more-than-200× swing. Same model, same dataset.</p>
+<h2 id="three-contributions" dir="auto">Three contributions</h2>
+<ol dir="auto">
+<li>
+<p dir="auto"><strong>An optimization-based masterface attack.</strong> Two phases; LM-MA-ES on the embedding hypersphere (Phase 1) followed by PGD-style image-space realization (Phase 2). Reaches <strong>49.957% Phase-2 coverage on FaceNet-CASIA, surpassing the prior GAN-based result</strong> of Shmelkin et al. (2021) at 43.82%, with a simpler, non-generative pipeline.</p>
+</li>
+<li>
+<p dir="auto"><strong>Two pipeline "footguns".</strong> The FAR-threshold rounding direction and the face-alignment strategy each modulate masterface coverage by up to <strong>two orders of magnitude</strong>, while pairwise accuracy moves by ≤0.1 pp. These pipeline choices are security-critical yet structurally invisible to standard benchmarks.</p>
+</li>
+<li>
+<p dir="auto"><strong>The irreducible floor (JT-Attack).</strong> Even with both pipeline knobs set to their safest values, every model still admits a single embedding covering any <strong>2–4 randomly chosen identities ~100% of the time</strong>. Pipeline mitigations bound the magnitude of large-scale attacks; the small-<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span> targeted floor lies in the models themselves.</p>
+</li>
+</ol>
+<h2 id="headline-results" dir="auto">Headline results</h2>
+<p dir="auto">Accumulative coverage from nine masterface embeddings (one per spherical-k-means cluster, k=9), evaluated against all 5,749 LFW identities. <em>MTCNN</em> = MTCNN-DavidSandberg, <em>Retina</em> = RetinaFace; <em>under</em> = FAR≈0.001 from below, <em>over</em> = from above.</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Model</th>
+<th>Pipeline</th>
+<th align="right">Coverage %</th>
+<th align="right">Accuracy %</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CosFace</strong></td>
+<td><strong>MTCNN / under</strong></td>
+<td align="right"><strong>47.2</strong></td>
+<td align="right"><strong>99.65</strong></td>
+</tr>
+<tr>
+<td>CosFace</td>
+<td>Retina / over</td>
+<td align="right">24.6</td>
+<td align="right">99.58</td>
+</tr>
+<tr>
+<td>CosFace</td>
+<td>Retina / under</td>
+<td align="right">0.23</td>
+<td align="right">99.58</td>
+</tr>
+<tr>
+<td>ArcFace</td>
+<td>MTCNN / under</td>
+<td align="right">45.7</td>
+<td align="right">95.47</td>
+</tr>
+<tr>
+<td>ArcFace</td>
+<td>Retina / over</td>
+<td align="right">21.4</td>
+<td align="right">99.55</td>
+</tr>
+<tr>
+<td>ArcFace</td>
+<td>Retina / under</td>
+<td align="right">0.45</td>
+<td align="right">99.55</td>
+</tr>
+<tr>
+<td>AdaFace-IR101</td>
+<td>MTCNN / under</td>
+<td align="right">32.3</td>
+<td align="right">99.62</td>
+</tr>
+<tr>
+<td>AdaFace-IR101</td>
+<td>Retina / over</td>
+<td align="right">22.5</td>
+<td align="right">99.58</td>
+</tr>
+<tr>
+<td>AdaFace-IR101</td>
+<td>Retina / under</td>
+<td align="right">0.37</td>
+<td align="right">99.58</td>
+</tr>
+<tr>
+<td>AdaFace-ViT</td>
+<td>MTCNN / under</td>
+<td align="right">6.6</td>
+<td align="right">99.90</td>
+</tr>
+<tr>
+<td>AdaFace-ViT</td>
+<td>Retina / over</td>
+<td align="right">28.8</td>
+<td align="right">99.70</td>
+</tr>
+<tr>
+<td>AdaFace-ViT</td>
+<td>Retina / under</td>
+<td align="right">2.4</td>
+<td align="right">99.70</td>
+</tr>
+<tr>
+<td>FaceNet (CASIA)</td>
+<td>MTCNN / under</td>
+<td align="right">37.3</td>
+<td align="right">98.97</td>
+</tr>
+<tr>
+<td>FaceNet (CASIA)</td>
+<td>Retina / over</td>
+<td align="right">58.1</td>
+<td align="right">97.97</td>
+</tr>
+<tr>
+<td>FaceNet (CASIA)</td>
+<td>Retina / under</td>
+<td align="right">41.4</td>
+<td align="right">97.97</td>
+</tr>
+<tr>
+<td>FaceNet (VGG2)</td>
+<td>MTCNN / under</td>
+<td align="right">24.2</td>
+<td align="right">99.53</td>
+</tr>
+<tr>
+<td>FaceNet (VGG2)</td>
+<td>Retina / over</td>
+<td align="right">34.8</td>
+<td align="right">99.40</td>
+</tr>
+<tr>
+<td>FaceNet (VGG2)</td>
+<td>Retina / under</td>
+<td align="right">25.6</td>
+<td align="right">99.40</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">The CosFace MTCNN / under row is the load-bearing exhibit: the highest pairwise accuracy in the table coexists with the highest coverage at the strictest threshold direction.</p>
+<h2 id="method" dir="auto">Method</h2>
+<h3 id="phase-1--embedding-space-search" dir="auto">Phase 1 — embedding-space search</h3>
+<p dir="auto">Given a set of target identity embeddings <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathcal" style="margin-right:0.08222em;">P</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊂</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8491em;"></span><span class="mord"><span class="mord mathbb">R</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8491em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">d</span></span></span></span></span></span></span></span></span></span></span> on the unit hypersphere, Phase 1 searches for a point <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6887em;"></span><span class="mord"><span class="mord mathbf">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6887em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span> whose <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.1132em;">τ</span></span></span></span>-neighborhood covers as many of them as possible. The non-differentiable max-coverage objective is replaced with a smooth surrogate</p>
+<p dir="auto"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathcal">L</span><span class="mopen">(</span><span class="mord mathbf">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:3.6em;vertical-align:-1.55em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">∣</span><span class="mord mathcal" style="margin-right:0.08222em;">P</span><span class="mord">∣</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen"><span class="delimsizing mult"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.05em;"><span style="top:-4.05em;"><span class="pstrut" style="height:5.6em;"></span><span style="width:0.667em;height:3.600em;"><svg xmlns="http://www.w3.org/2000/svg" width="0.667em" height="3.600em" viewBox="0 0 667 3600"><path d="M403 1759 V84 H666 V0 H319 V1759 v0 v1759 h347 v-84
+H403z M403 1759 V0 H319 V1759 v0 v1759 h84z"/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.55em;"><span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.05em;"><span style="top:-1.8557em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mrel mtight">∈</span><span class="mord mathcal mtight" style="margin-right:0.08222em;">P</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4304em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">1</span><span class="mopen">[</span><span class="mord mathnormal">d</span><span class="mopen">(</span><span class="mord mathbf">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">p</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal" style="margin-right:0.1132em;">τ</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.05em;"><span style="top:-1.8557em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mrel mtight">∈</span><span class="mord mathcal mtight" style="margin-right:0.08222em;">P</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4304em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">d</span><span class="mopen">(</span><span class="mord mathbf">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">p</span><span class="mclose">)</span><span class="mclose"><span class="delimsizing mult"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.05em;"><span style="top:-4.05em;"><span class="pstrut" style="height:5.6em;"></span><span style="width:0.667em;height:3.600em;"><svg xmlns="http://www.w3.org/2000/svg" width="0.667em" height="3.600em" viewBox="0 0 667 3600"><path d="M347 1759 V0 H0 V84 H263 V1759 v0 v1759 H0 v84 H347z
+M347 1759 V0 H263 V1759 v0 v1759 h84z"/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.55em;"><span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mpunct">,</span></span></span></span></span></p>
+<p dir="auto">optimized with <strong>LM-MA-ES</strong> (Loshchilov et al., 2017) — 1,000 generations, population 100, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.99</span></span></span></span>. Identity sets are partitioned into 9 clusters via spherical <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span>-means to match the budget reported by prior masterface work.</p>
+<h3 id="phase-2--image-realization" dir="auto">Phase 2 — image realization</h3>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="img/phase2-arcface.webp"><img decoding="async" loading="lazy" width="1600" height="576" src="img/phase2-arcface.webp" alt="Nine generated masterface images for ArcFace under MTCNN-DS + FAR≈0.001 from below. Collectively they cover 44.2% of all LFW identities."></a></p>
+<p dir="auto">Given a masterface embedding <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7079em;"></span><span class="mord"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7079em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathbf">x</span></span><span style="top:-3.0134em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.2222em;"><span class="mord">^</span></span></span></span></span></span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6887em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span>, Phase 2 iteratively perturbs a source face <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4444em;"></span><span class="mord mathbf">s</span></span></span></span> in pixel space (Adam, PGD-style perturbation budget <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">ϵ</span></span></span></span>) so that its embedding under the face mapper <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">FM</span></span></span></span> approaches <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7079em;"></span><span class="mord"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7079em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathbf">x</span></span><span style="top:-3.0134em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.2222em;"><span class="mord">^</span></span></span></span></span></span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6887em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span>. The result is a plausible-looking face whose embedding lies within <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.1132em;">τ</span></span></span></span> of many unrelated identities. <strong>88–97% of Phase-1 coverage survives Phase-2 realization</strong> under the dangerous pipeline (Table 5 in the report).</p>
+<h2 id="the-irreducible-floor-jt-attack" dir="auto">The irreducible floor (JT-Attack)</h2>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="img/j-attack-arcface.webp"><img decoding="async" loading="lazy" width="1600" height="927" src="img/j-attack-arcface.webp" alt="Joint-Threshold Attack against ArcFace under the strictest pipeline (RetinaFace + FAR≈0.001 from below). Coverage (blue) far exceeds the 1/N theoretical maximum for a well-separated embedding space (red dashed)."></a></p>
+<p dir="auto">The <strong>Joint-Threshold Attack</strong> asks: under the <em>safest</em> pipeline configuration (RetinaFace + FAR≈0.001 from below), can a single embedding cover <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span> randomly chosen identities? For <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mord">2</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">3</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">4</span><span class="mclose">}</span></span></span></span>, the answer is <strong>yes, ~100% of the time, across every model tested.</strong> The theoretical maximum for a well-separated embedding space is <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1/</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span> (red dashed) — the observed curves blow past it. Pipeline mitigations bound the magnitude of <em>broad</em> attacks but leave <em>targeted small-group</em> attacks fully open. This is a model-level property, independent of any evaluation choice.</p>
+<hr>
+<p dir="auto">📄 Full technical report: <a href="https://github.com/enazari/Masterface-Attacks/blob/master/technical_report.pdf">technical_report.pdf</a>. All experimental details, threshold definitions, and additional results live there; this section covers only the commands needed to regenerate the artifacts.</p>
+<h2 id="reproducing-the-results" dir="auto">Reproducing the results</h2>
+<h3 id="quick-start" dir="auto">Quick start</h3>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate"><span class="pl-c"><span class="pl-c">#</span> 1) Two conda envs (PyTorch + TensorFlow).</span>
+conda env create -f environments/master.yml          <span class="pl-c"><span class="pl-c">#</span> ArcFace, CosFace, AdaFace (PyTorch)</span>
+conda env create -f environments/master_facenet.yml  <span class="pl-c"><span class="pl-c">#</span> FaceNet variants (TensorFlow)</span>
+
+<span class="pl-c"><span class="pl-c">#</span> 2) Run any config.</span>
+conda activate master
+python run.py --config <span class="pl-k">&lt;</span>name<span class="pl-k">&gt;</span>            <span class="pl-c"><span class="pl-c">#</span> e.g. cosface_mtcnn_below</span></pre></div>
+<p dir="auto">Weights, LFW, LMDBs, and embedding caches are auto-built on first use under <code class="notranslate">data/</code> (the first run pays a one-time download + alignment cost). ArcFace and CosFace weights have no scriptable URL — on first use the loader prints a 3-step pointer to the InsightFace OneDrive folder; download the files manually and drop them in the path it specifies.</p>
+<p dir="auto">Configs live under <code class="notranslate">configs/&lt;section&gt;/&lt;name&gt;.yaml</code> and are looked up by name across all subdirectories. The YAML's <code class="notranslate">attack_mode</code> field selects between two attacks:</p>
+<ul dir="auto">
+<li><code class="notranslate">attack_mode: masterface</code> (default) — Phase-1 GA embedding search + optional Phase-2 image realization.</li>
+<li><code class="notranslate">attack_mode: jt</code> — JT-Attack: joint-threshold attack across N randomly chosen identities.</li>
+</ul>
+<h3 id="models" dir="auto">Models</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Name in configs</th>
+<th>Source</th>
+<th>Architecture</th>
+<th>Reported LFW acc.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">arcface</code></td>
+<td><a href="https://github.com/deepinsight/insightface">insightface</a></td>
+<td>IResNet-100</td>
+<td>99.52%</td>
+</tr>
+<tr>
+<td><code class="notranslate">cosface</code></td>
+<td><a href="https://github.com/deepinsight/insightface">insightface</a></td>
+<td>IResNet-100</td>
+<td>99.58%</td>
+</tr>
+<tr>
+<td><code class="notranslate">adaface_ir101</code></td>
+<td><a href="https://github.com/mk-minchul/AdaFace">AdaFace</a></td>
+<td>IResNet-101</td>
+<td>99.58%</td>
+</tr>
+<tr>
+<td><code class="notranslate">adaface_vit</code></td>
+<td><a href="https://github.com/mk-minchul/CVLface">CVLface</a></td>
+<td>ViT-Base</td>
+<td>99.70%</td>
+</tr>
+<tr>
+<td><code class="notranslate">facenet_casia</code></td>
+<td><a href="https://github.com/davidsandberg/facenet">davidsandberg/facenet</a></td>
+<td>InceptionResNet</td>
+<td>97.97%</td>
+</tr>
+<tr>
+<td><code class="notranslate">facenet_vgg2</code></td>
+<td><a href="https://github.com/davidsandberg/facenet">davidsandberg/facenet</a></td>
+<td>InceptionResNet</td>
+<td>99.40%</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">Activate <code class="notranslate">master</code> for the first four, <code class="notranslate">master_facenet</code> for the FaceNet variants. <code class="notranslate">reproduce_all.sh</code> switches automatically.</p>
+<h3 id="reproducing-all-the-experiments" dir="auto">Reproducing all the experiments</h3>
+<p dir="auto"><code class="notranslate">./scripts/reproduce_all.sh</code> runs every YAML under <code class="notranslate">configs/</code> end-to-end (headline 6×3, JT-Attack, Beatles targeted), switching between the <code class="notranslate">master</code> and <code class="notranslate">master_facenet</code> conda envs automatically based on each config's <code class="notranslate">model_name</code>. Outputs land in <code class="notranslate">results/</code>.</p>
+<h2 id="layout" dir="auto">Layout</h2>
+<pre class="notranslate"><code class="notranslate">run.py                  single entry point; dispatches on attack_mode
+configs/                experiment YAMLs grouped by section
+masterface/             the Python package
+  attack/               masterface orchestrator + Phase-1 GA + Phase-2 image realization
+  jt_attack/            JT-Attack runner + logger + plotter
+  models/               6 face mappers + base + vendored backbones + on-demand weight fetcher
+  detectors/            MTCNN-DS + RetinaFace alignment (incl. differentiable)
+  data/                 LFW fetch, LMDB build, NPZ embeddings, threshold cache
+  optimization/         LM-MA-ES + GA + fitness problems
+  loss/                 euclidean / cosine / arc_cosine (PyTorch and TF variants)
+  metrics/              threshold, coverage (Gini, per-identity), clustering stats
+  utils/                config lookup, distance functions, result logger, helpers
+data/                   LFW + LMDB + embedding caches + source faces + model weights (gitignored)
+results/                experiment outputs (gitignored)
+scripts/                reproduce-all driver + optional pre-fetch weights script
+environments/           two conda env files (master, master_facenet)
+assets/                 figures embedded in this README
+</code></pre>
+<h2 id="acknowledgments" dir="auto">Acknowledgments</h2>
+<p dir="auto">This research was enabled in part by support provided by the <a href="https://alliancecan.ca" rel="nofollow">Digital Research Alliance of Canada</a>.</p>
+<h2 id="license" dir="auto">License</h2>
+<p dir="auto">Apache 2.0. Model weights are subject to their upstream licenses.</p></article><p class="rtop"><a class="btn" href="https://github.com/enazari/Masterface-Attacks">View on GitHub</a></p></div></div></main>
+</body></html>

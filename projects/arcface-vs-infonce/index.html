@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Face Verification: ArcFace vs InfoNCE · Ehsan Nazari</title><meta name="description" content="How far can contrastive loss get us compared to margin-based classification?">
+<link rel="icon" type="image/png" href="../../favicon.png"><link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="google-site-verification" content="bXUR7A0NablAs6DUwHXGGxXQYOcxzMlt48DhU76oiv8">
+<meta property="og:type" content="website"><meta property="og:title" content="Face Verification: ArcFace vs InfoNCE · Ehsan Nazari"><meta property="og:description" content="How far can contrastive loss get us compared to margin-based classification?">
+<meta property="og:image" content="https://enazari.github.io/img/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">
+<style>:root{--bg:#fff;--fg:#1a1a1a;--mute:#6b6b6b;--line:#e6e6e6;--a:#0b5fd3;--road:#0a0a0a;--edge:transparent;--rail:#9aa0a6;--shadow:rgba(0,0,0,.16)}
+@media(prefers-color-scheme:dark){:root{--bg:#111;--fg:#e8e8e8;--mute:#9a9a9a;--line:#2a2a2a;--a:#7db3ff;--road:#000;--edge:#3a3a3a;--rail:#6f757c;--shadow:rgba(0,0,0,.6)}}
+*{box-sizing:border-box}
+html{overflow-y:scroll;font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--fg);-webkit-text-size-adjust:100%}
+body{margin:0 auto;max-width:60rem;padding:clamp(2rem,9vh,5rem) clamp(1.5rem,8vw,5rem) 4rem}
+a{color:var(--a);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2{line-height:1.25;margin:0}h1{font-size:1.7rem}h2{font-size:1.05rem;margin:0 0 .9rem;color:var(--mute);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+nav{display:flex;gap:1.25rem;flex-wrap:wrap;padding-bottom:1rem;border-bottom:1px solid var(--line);margin-bottom:2rem}
+nav a{color:var(--fg)}nav a[aria-current]{font-weight:600}nav .home{margin-right:auto;font-weight:600}
+.narrow{max-width:42rem}
+body.hb{max-width:none}.col{max-width:60rem;margin:0 auto}
+.sub{color:var(--mute);margin:.35rem 0 0}
+.links{display:flex;gap:.4rem 1rem;flex-wrap:wrap;margin:.75rem 0 1rem}
+.hero{max-width:100%;height:auto;border-radius:.4rem;margin:1rem 0}
+.pub{padding:.9rem 0;border-top:1px solid var(--line)}.pub small{display:block;color:var(--mute)}
+.pub-h{margin-top:2rem}
+.btn{display:inline-block;border:1px solid var(--line);border-radius:.4rem;padding:.4rem .9rem;color:var(--fg)}
+footer{margin-top:3rem;color:var(--mute);font-size:.85rem}
+.home .work p{margin:0}.home .work ul{margin:.35rem 0 0;padding-left:1.1rem}.home .work li{margin:.3rem 0 0}
+table{border-collapse:collapse;font-size:.9rem;margin:.5rem 0 1rem}th,td{text-align:left;padding:.35rem .9rem .35rem 0;border-bottom:1px solid var(--line)}th{color:var(--mute);font-weight:600}
+@media(min-width:60rem){
+.land{grid-template-columns:24rem 1fr;gap:4rem;align-items:start}
+.me{position:sticky;top:1.5rem}.me img{width:12rem}}
+
+.intro h1{font-size:clamp(2rem,5.3333vw,4rem);line-height:1.1}.home .intro h1.bx{margin-bottom:clamp(20px,3.3333vw,40px)}.intro h1 .bl{display:inline-block;width:0;height:0}.intro .sub{font-size:.9rem}
+.plain{list-style:none;margin:0;padding:0}
+.home .bx{position:relative;outline:1px solid #e0457b;outline-offset:2px;box-sizing:border-box;margin:0;padding:.4rem .9rem}
+.home .ph{display:block;padding:.45rem}
+.home .ph img{display:block;width:4.6rem;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:.4rem}
+.home .intro{display:grid;grid-template-columns:auto 1fr;gap:.8rem 1.1rem;align-items:start}
+.home .ph{grid-row:1/5}
+.home .intro .bx{justify-self:start}
+.home h2.bx{width:fit-content;margin-top:1.2rem}
+.home .plain{display:flex;flex-wrap:wrap;gap:1.6rem;margin-top:.8rem}
+.home .plain a.bx,.home .foot a.bx{display:inline-block;padding:.35rem 1rem;color:var(--fg)}
+.home .foot a.bx{color:var(--a)}
+.home .plain a.bx.tn{padding:0;outline:0;display:inline-block}
+.tn{--tw:clamp(22px,3.6667vw,44px);--td:clamp(21px,3.5vw,42px)}
+.tn span{display:block;border:1px solid #e0457b;padding:.35rem 1rem calc(.35rem + var(--td) + 2px);clip-path:polygon(0 0,100% 0,100% 100%,calc(50% + var(--tw) / 2) 100%,calc(50% + var(--tw) / 2) calc(100% - var(--td)),calc(50% - var(--tw) / 2) calc(100% - var(--td)),calc(50% - var(--tw) / 2) 100%,0 100%)}
+.tn::before{content:"";position:absolute;left:50%;bottom:0;width:var(--tw);height:var(--td);margin-left:calc(var(--tw) / -2);background:#14171d;border:2px solid var(--c);border-bottom:0;box-sizing:border-box}
+.home .foot{gap:.8rem;margin-top:3.6rem}
+.home:not(.lx) .plain{gap:4.5rem 1.6rem}
+.home:not(.lx) .tn span{display:grid;grid-template-columns:3.25rem 1fr;gap:.1rem .7rem;align-items:center;width:14rem;text-align:left}
+.home:not(.lx) .tn .th{grid-row:1/3;width:3.25rem;height:3.25rem;object-fit:cover;border-radius:.35rem;display:block}
+.home:not(.lx){--g:1.4rem}@media(max-width:59.99rem){.home:not(.lx){--g:max(36px,2.2rem)}}.home:not(.lx) .plain li{display:flex}.home:not(.lx) .tn span{height:100%;box-sizing:border-box}
+.home:not(.lx) .tn b{font-size:.92rem;line-height:1.25;font-weight:600}.home:not(.lx) .tn small{color:var(--mute);font-size:.74rem;line-height:1.3}
+/* the current look in the split arrangement: text on the left, projects on the right (no yard, no divider) */
+@media(min-width:60rem){
+.home:not(.lx) .col{max-width:90rem;display:grid;grid-template-columns:clamp(23.5rem,32vw,40rem) 1fr;grid-template-rows:auto 1fr;gap:0 2.5rem;align-items:start}
+.home:not(.lx) .right{grid-area:1/2/3/3}
+.home:not(.lx) .intro{grid-area:1/1;grid-template-columns:auto 1fr;gap:0 1rem;align-items:end}
+.home:not(.lx) .ph{grid-row:auto;margin-bottom:var(--g)}
+.home:not(.lx) .ph img{width:clamp(6rem,9vw,11rem)}
+
+.home:not(.lx) .intro h1{font-size:clamp(1.9rem,2.4vw,3.4rem);white-space:nowrap;align-self:start}
+.home:not(.lx) .intro p.bx,.home:not(.lx) .intro .work{grid-column:1/-1;margin-top:var(--g)}.home:not(.lx) .intro h1+p.bx{margin-top:0}
+.home:not(.lx) .foot{grid-area:2/1;margin-top:var(--g)}
+.home:not(.lx) h2.sel{margin-top:0}
+.home:not(.lx) .plain{margin-top:1.5rem}
+.home.free:not(.lx) .bx{grid-area:auto!important;margin:0!important}}
+/* the chosen design (Nov 2): dashed borders, sharp corners, white boxes on a grid */
+:root{--gridline:#dcdcd6}
+@media(prefers-color-scheme:dark){:root{--gridline:#2a2a2a}}
+html:not(:has(main.lx)){background:linear-gradient(var(--gridline) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,var(--gridline) 1px,transparent 1px) 0 0/24px 24px,var(--bg)}
+.home:not(.lx) .bx{outline:0;border:1px dashed var(--mute);border-radius:0}
+.home:not(.lx) a.bx.tn{border:0;background:none}
+.home:not(.lx) .tn span{border:1px dashed var(--mute);border-radius:0}
+.home:not(.lx) .ph img{border-radius:0}
+/* the dashes are drawn, not left to the browser: its dashed border stretches the dashes to fit each side, so the sides of a box differ */
+.home:not(.lx) .bx:not(.tn),.home:not(.lx) .tn span,body.in nav a,body.in .btn,body.in .sheet,body.in .pcard,body.in h2.pub-h{border:1px solid transparent;background-color:var(--bg);background-image:repeating-linear-gradient(90deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(90deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(180deg,var(--mute) 0 4px,transparent 0 7px),repeating-linear-gradient(180deg,var(--mute) 0 4px,transparent 0 7px);background-position:left top,left bottom,left top,right top;background-size:100% 1px,100% 1px,1px 100%,1px 100%;background-repeat:no-repeat;background-origin:border-box}
+.home:not(.lx) .intro{row-gap:0}.home:not(.lx) .ph{margin-bottom:var(--g)}.home:not(.lx) .intro h1.bx{margin-bottom:var(--g)}.home:not(.lx) .intro p.bx,.home:not(.lx) .intro .work{margin-top:var(--g)}.home:not(.lx) .intro h1+p.bx{margin-top:0}.home:not(.lx) .foot{margin-top:var(--g)}.home.free:not(.lx) .bx{margin:0!important}
+.home:not(.lx) .cap{max-width:25rem;margin:4rem 0 0;color:var(--mute);font-size:.78rem;line-height:1.5}
+@media(max-width:40rem){.home:not(.lx) .tn span{width:auto;grid-template-columns:2.4rem 1fr}.home:not(.lx) .tn .th{width:2.4rem;height:2.4rem}.home:not(.lx) .tn small{display:none}}
+@media(max-width:59.99rem){.home:not(.lx) .ph img{width:6.5rem}}
+@media(max-width:30rem){.home .intro{grid-template-columns:1fr}.home .ph{grid-row:auto}}
+.home.free .bx{margin:0}
+.home{position:relative}
+.rb{position:absolute;top:calc(-1 * clamp(2rem,9vh,5rem));right:calc(-1 * clamp(1.5rem,8vw,5rem));width:clamp(210px,35vw,420px);height:clamp(157.5px,26.25vw,315px);pointer-events:none;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 25%);mask-image:linear-gradient(to right,transparent 0,#000 25%)}
+.rb svg{display:block;width:100%;height:100%}
+.rb .rail{stroke:var(--rail)}
+.rbc{position:absolute;left:23.69%;top:17.65%;width:49.67%;height:66.22%}
+@media(max-width:91rem){.rbon .col{padding-top:170px}}
+.home.nopad .col{padding-top:0}
+.cars{position:absolute;left:0;pointer-events:none;z-index:100000}
+.carsl{position:absolute;left:0;top:0;overflow:hidden;pointer-events:none;z-index:100000;transform-origin:0 0;contain:layout style}.carsl div,.carsl canvas{position:absolute;left:0;top:0}.carsl .cs{width:34px;height:22px;background-size:100% 100%;transform-origin:17px 11px;will-change:transform}.carsl .cw{overflow:hidden}.carsl .rg{box-sizing:border-box;border:2.5px solid;border-radius:50%}.carsl .sp{box-sizing:border-box;border:2px solid #e8590c;border-radius:50%;animation:carsp .4s linear forwards}@keyframes carsp{from{transform:scale(var(--s));opacity:.9}to{transform:scale(1);opacity:0}}
+.carbtn,.cpbtns button{font:inherit;font-size:.8rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:.4rem;padding:.3rem .7rem;cursor:pointer}
+.carbtn.carfix{position:fixed;right:1rem;bottom:1rem;z-index:100001;color:var(--mute)}
+.carctl{display:flex;gap:.4rem;margin-top:.55rem}.carctl button{font:inherit;font-size:.78rem;line-height:1;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:0;padding:.35rem .7rem;cursor:pointer}.carctl .carbtn{display:inline-flex;align-items:center;padding:.3rem .45rem;color:var(--mute)}.carctl button:hover,.carctl .carbtn[aria-expanded=true]{color:var(--fg);border-color:var(--fg)}
+.carbtn[aria-expanded=true]{color:var(--fg)}
+.carpanel{position:fixed;z-index:100001;width:min(34rem,calc(100vw - 2rem));max-height:calc(100vh - 5rem);overflow:auto;box-sizing:border-box;padding:.8rem;background:var(--bg);border:1px solid var(--line);border-radius:.5rem;font-size:.8rem;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.carpanel{z-index:2147483000!important;overflow:auto;border:1px dashed var(--mute)!important;border-radius:0!important;box-shadow:0 6px 20px rgba(0,0,0,.08)!important}.carpanel[hidden]{display:none}.carpanel.fix{position:fixed;right:1rem;bottom:3.4rem}.cpsum{margin:0 0 .6rem}.cpmore summary{cursor:pointer;color:var(--mute);margin:.2rem 0 .5rem}
+.cphead{margin:0 0 .6rem;color:var(--mute);line-height:1.45}
+.cpbtns{display:flex;flex-wrap:wrap;gap:.4rem}
+.cpdrv{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .7rem}.cpdrv button{font:inherit;font-size:.8rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);padding:.3rem .7rem;cursor:pointer}.cpdrv button[aria-pressed=true]{border-color:var(--fg);font-weight:600}.cpdrv button:disabled{opacity:.5;cursor:progress}
+.cprate{display:flex;align-items:center;gap:.5rem;margin:.6rem 0 0}.cprate input{flex:1;max-width:12rem}
+.carpanel pre{margin:.5rem 0 0;font-size:.72rem;white-space:pre-wrap;color:var(--mute)}
+.cphud{margin:.5rem 0 0;min-height:1em;color:var(--mute)}
+.free{position:relative}.free .bx{position:absolute;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y pinch-zoom;transition:box-shadow .15s,scale .15s}.free .bx.grab,.free .bx.lift{will-change:transform}
+@media(hover:hover){.free .bx:hover{box-shadow:0 3px 12px var(--shadow)}}
+.free .bx.lift{scale:1.03;box-shadow:0 8px 22px var(--shadow)}
+.free .grab{cursor:grabbing;outline-color:#1a7f37}
+.free .bx:not(.tn),.free .tn span{background:var(--bg)}
+.foot{margin-top:1.5rem;display:flex;gap:.4rem 1rem;flex-wrap:wrap}
+
+/* project pages that mirror a GitHub README (readmes.py) */
+.readme{max-width:56rem}.rtop{margin:0 0 1.2rem}.readme .rtop:last-child{margin:2rem 0 0}
+.md{line-height:1.6;overflow-wrap:break-word}
+.md h1{font-size:2rem;line-height:1.25;margin:.4rem 0 1rem;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+.md h2{font-size:1.45rem;line-height:1.3;margin:2.2rem 0 .9rem;color:var(--fg);letter-spacing:normal;text-transform:none;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+.md h3{font-size:1.15rem;margin:1.7rem 0 .6rem}.md h4,.md h5,.md h6{font-size:1rem;margin:1.4rem 0 .5rem}
+.md p,.md ul,.md ol,.md blockquote,.md pre,.md table,.md details,.md .highlight{margin:0 0 1rem}
+.md li+li{margin-top:.25rem}.md img{max-width:100%;height:auto;vertical-align:middle}
+.md blockquote{margin-left:0;padding:0 1rem;color:var(--mute);border-left:.25rem solid var(--line)}
+.md code{font:.86em ui-monospace,SFMono-Regular,Menlo,Consolas,"DejaVu Sans Mono",monospace;background:color-mix(in srgb,var(--fg) 7%,transparent);padding:.15em .35em;border-radius:4px}
+.md pre{overflow:auto;padding:1rem;background:color-mix(in srgb,var(--fg) 5%,transparent);border-radius:6px;line-height:1.45}
+.md pre code{background:none;padding:0;font-size:.85rem}
+.md table{display:block;max-width:100%;width:max-content;overflow:auto;border-collapse:collapse}
+.md th,.md td{padding:.4rem .8rem;border:1px solid var(--line);vertical-align:top}.md th{font-weight:600}
+.md tr:nth-child(2n){background:color-mix(in srgb,var(--fg) 3%,transparent)}
+.md hr{border:0;border-top:1px solid var(--line);margin:1.6rem 0}.md summary{cursor:pointer}
+.md [align=center]{text-align:center}.md .sub{margin:-.4rem 0 1.2rem}
+.md .figs{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin:1.2rem 0 .5rem}.md .figs img{flex:1 1 0;min-width:4rem;border-radius:4px}
+.md .figcap{text-align:center;color:var(--mute);font-size:.88rem;margin:0 0 1.4rem}.md .pubbox{padding:.8rem 1rem;border-left:.25rem solid var(--line);background:color-mix(in srgb,var(--fg) 3%,transparent);margin:0 0 1rem}.md .pubbox p:last-child{margin:0}.md .katex-display{overflow-x:auto;overflow-y:hidden;padding:.25rem 0}
+.md .pl-c{color:#6e7781}.md .pl-c1,.md .pl-s .pl-v{color:#0550ae}.md .pl-e,.md .pl-en{color:#6639ba}.md .pl-ent{color:#116329}
+.md .pl-k{color:#cf222e}.md .pl-s,.md .pl-pds,.md .pl-sr{color:#0a3069}.md .pl-v,.md .pl-smi{color:#953800}
+@media(prefers-color-scheme:dark){.md .pl-c{color:#8b949e}.md .pl-c1{color:#79c0ff}.md .pl-e,.md .pl-en{color:#d2a8ff}.md .pl-ent{color:#7ee787}.md .pl-k{color:#ff7b72}.md .pl-s,.md .pl-pds,.md .pl-sr{color:#a5d6ff}.md .pl-v,.md .pl-smi{color:#ffa657}}
+
+/* the inner pages in the home page's design: grid paper, dashed square boxes, the text on one white sheet (the dashes: the rule above) */
+body.in{width:fit-content;max-width:min(60rem,100%)}body.in nav{gap:.5rem;flex-wrap:wrap;padding:0;border:0;margin-bottom:1.25rem}body.in .rtop{display:flex;flex-wrap:wrap;gap:.5rem}
+body.in nav a{padding:.35rem .9rem;color:var(--a)}body.in nav .home{color:var(--fg)}body.in nav a[aria-current]{color:var(--fg);font-weight:600}
+body.in .sheet{width:fit-content;max-width:100%;padding:clamp(1.2rem,3.5vw,2.6rem)}
+body.in .narrow{width:42rem;max-width:100%}body.in .readme{width:54rem;max-width:100%}
+body.in .btn{padding:.35rem .9rem;color:var(--a);border-radius:0}
+body.in nav a:hover,body.in .btn:hover,body.in .pcard:hover{text-decoration:none;box-shadow:0 3px 12px var(--shadow)}
+body.in h2.pub-h{width:fit-content;padding:.3rem .9rem;margin:2rem 0 .7rem;font-size:.92rem}body.in h1+h2.pub-h{margin-top:1.4rem}
+body.in footer{margin-top:1.25rem}
+@media(max-width:30rem){body.in{padding-left:1rem;padding-right:1rem}body.in nav{gap:.35rem}body.in nav a{padding:.3rem .55rem;font-size:.88rem}}
+.cards{list-style:none;margin:1.4rem 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1rem}
+.pcard{display:grid;grid-template-columns:3.25rem 1fr;grid-template-rows:auto 1fr;gap:.15rem .8rem;align-items:start;height:100%;padding:.8rem .9rem;color:var(--fg)}
+.pcard .th{grid-row:1/3;width:3.25rem;height:3.25rem;object-fit:cover;border-radius:.35rem}
+.pcard b{font-size:.95rem;line-height:1.3}.pcard small{color:var(--mute);font-size:.8rem;line-height:1.4}
+</style><link rel="stylesheet" href="../../katex/katex.min.css"></head><body class="in">
+<nav><a class="home" href="../../">Ehsan Nazari</a><a href="../../projects/">Projects</a><a href="../../publications/">Publications</a></nav>
+<main><div class=sheet><div class="readme"><p class="rtop"><a class="btn" href="https://github.com/enazari/ArcFace-vs-InfoNCE">View on GitHub</a></p><article class="md"><h1 id="how-far-can-contrastive-loss-get-us-in-face-verification" dir="auto">How far can contrastive loss get us in face verification?</h1>
+<p align="center" dir="auto">
+  <a target="_blank" rel="noopener noreferrer" href="img/infonce_pairs.webp"><img decoding="async" height="410" src="img/infonce_pairs.webp" alt="InfoNCE pairs" width="500"></a>
+  <br>
+  <em>Can CLIP's contrastive loss alone learn to tell faces apart?</em>
+</p>
+<p dir="auto">Most modern face verification systems are trained as classifiers — and then the classifier is thrown away. ArcFace learns a softmax head over identity classes, enforces angular margins, and discards it at inference. InfoNCE offers a more direct path: optimize embedding similarity itself, the same objective behind CLIP. This project puts them head-to-head on the same backbone and data.</p>
+<h2 id="results" dir="auto">Results</h2>
+<p dir="auto">All models trained on MS1M-ArcFace (85K identities), evaluated with 10-fold cross-validation at FAR@0.001.</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Experiment</th>
+<th>LFW</th>
+<th>CFP-FF</th>
+<th>CFP-FP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ArcFace (ResNet-50)</td>
+<td>99.72%</td>
+<td>99.80%</td>
+<td>95.84%</td>
+</tr>
+<tr>
+<td>InfoNCE (ResNet-50)</td>
+<td>99.55%</td>
+<td>99.59%</td>
+<td>87.89%</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">InfoNCE nearly matches ArcFace on frontal benchmarks but drops 8 points on CFP-FP (pose variation). I surmise this is largely a supervision asymmetry. Both losses are softmax cross-entropy — the difference is what goes in the denominator:</p>
+<p dir="auto"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathcal">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">ArcFace</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.8743em;vertical-align:-1.307em;"></span><span class="mord">−</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.5672em;"><span style="top:-2.1288em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8902em;"><span style="top:-3.0652em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mspace mtight" style="margin-right:0.1952em;"></span><span class="mop mtight"><span class="mtight">c</span><span class="mtight">o</span><span class="mtight">s</span></span><span class="mopen mtight">(</span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:-0.0278em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.3448em;margin-left:-0.0359em;margin-right:0.1em;"><span class="pstrut" style="height:2.6595em;"></span><span class="mord mathnormal mtight">i</span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3147em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3678em;"><span></span></span></span></span></span></span><span class="mbin mtight">+</span><span class="mord mathnormal mtight">m</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9812em;"><span style="top:-2.4003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span><span class="mrel mtight"><span class="mrel mtight"><span class="mord vbox mtight"><span class="thinbox mtight"><span class="rlap mtight"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="inner"><span class="mord mtight"><span class="mrel mtight"></span></span></span><span class="fix"></span></span></span></span></span><span class="mrel mtight">=</span></span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3281em;"><span style="top:-2.357em;margin-left:-0.0359em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4358em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7912em;"><span style="top:-3.0051em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mspace mtight" style="margin-right:0.1952em;"></span><span class="mop mtight"><span class="mtight">c</span><span class="mtight">o</span><span class="mtight">s</span></span><span class="mspace mtight" style="margin-right:0.1952em;"></span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3281em;"><span style="top:-2.357em;margin-left:-0.0278em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2819em;"><span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8902em;"><span style="top:-3.0652em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mspace mtight" style="margin-right:0.1952em;"></span><span class="mop mtight"><span class="mtight">c</span><span class="mtight">o</span><span class="mtight">s</span></span><span class="mopen mtight">(</span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:-0.0278em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.3448em;margin-left:-0.0359em;margin-right:0.1em;"><span class="pstrut" style="height:2.6595em;"></span><span class="mord mathnormal mtight">i</span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3147em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3678em;"><span></span></span></span></span></span></span><span class="mbin mtight">+</span><span class="mord mathnormal mtight">m</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.307em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p dir="auto"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathcal">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">InfoNCE</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.9404em;vertical-align:-1.307em;"></span><span class="mord">−</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6334em;"><span style="top:-2.1288em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9812em;"><span style="top:-2.4003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mrel mtight"><span class="mrel mtight"><span class="mord vbox mtight"><span class="thinbox mtight"><span class="rlap mtight"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="inner"><span class="mord mtight"><span class="mrel mtight"></span></span></span><span class="fix"></span></span></span></span></span><span class="mrel mtight">=</span></span><span class="mord mathnormal mtight">i</span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">P</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4358em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.814em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.04398em;">z</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3281em;"><span style="top:-2.357em;margin-left:-0.044em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mbin mtight">⋅</span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.04398em;">z</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.3488em;margin-left:-0.044em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1512em;"><span></span></span></span></span></span></span><span class="mord mtight">/</span><span class="mord mathnormal mtight" style="margin-right:0.1132em;">τ</span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9564em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.04398em;">z</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3281em;"><span style="top:-2.357em;margin-left:-0.044em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mbin mtight">⋅</span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.04398em;">z</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8477em;"><span style="top:-2.2044em;margin-left:-0.044em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">i</span></span></span><span style="top:-2.931em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">+</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2956em;"><span></span></span></span></span></span></span><span class="mord mtight">/</span><span class="mord mathnormal mtight" style="margin-right:0.1132em;">τ</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.307em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p dir="auto">In ArcFace, each sample is pulled toward one positive class center and pushed away from all other 85,741 centers — fixed and always present. In InfoNCE, each sample is pulled toward one positive and pushed away from 1,448 other samples in the mini-batch — these change every iteration. CLIP uses 32,768-size batches; this suggests that increasing batch size may help narrow InfoNCE’s performance gap on harder benchmarks such as CFP-FP.</p>
+<p dir="auto">However, InfoNCE’s lack of fixed class centers may be a structural advantage for face verification. ArcFace embeds all faces on a hypersphere populated by 85,741 learned class centers — at inference, unseen faces tend to snap to the nearest center rather than occupying their own region of the space (see <a href="#embedding-space-analysis">embedding space analysis</a> below). InfoNCE has no such centers: the embedding space is shaped entirely by pairwise similarity, which may allow unseen identities to distribute more freely.</p>
+<h2 id="side-experiments" dir="auto">Side experiments</h2>
+<h3 id="does-adding-contrastive-loss-help-arcface" dir="auto">Does adding contrastive loss help ArcFace?</h3>
+<p dir="auto">Hybrid loss (ArcFace + 0.5 × InfoNCE) yields no improvement — contrastive regularization adds nothing over ArcFace’s margin alone. Config: <code class="notranslate">configs/arc-nce.yaml</code></p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Experiment</th>
+<th>LFW</th>
+<th>CFP-FF</th>
+<th>CFP-FP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ArcFace (ResNet-50)</td>
+<td>99.72%</td>
+<td>99.80%</td>
+<td>95.84%</td>
+</tr>
+<tr>
+<td>InfoNCE (ResNet-50)</td>
+<td>99.55%</td>
+<td>99.59%</td>
+<td>87.89%</td>
+</tr>
+<tr>
+<td><strong>ArcFace + InfoNCE (ResNet-50)</strong></td>
+<td><strong>99.72%</strong></td>
+<td><strong>99.73%</strong></td>
+<td><strong>95.30%</strong></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3 id="do-foundation-models-transfer-to-faces" dir="auto">Do foundation models transfer to faces?</h3>
+<p dir="auto">Frozen CLIP, DINOv2, and I-JEPA perform poorly for identity discrimination (52–68% LFW), indicating that generic visual pretraining does not yield face-discriminative embeddings. Config: <code class="notranslate">configs/clip.yaml</code>, <code class="notranslate">configs/dino.yaml</code>, <code class="notranslate">configs/jepa.yaml</code></p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Experiment</th>
+<th>LFW</th>
+<th>CFP-FF</th>
+<th>CFP-FP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ArcFace (ResNet-50)</td>
+<td>99.72%</td>
+<td>99.80%</td>
+<td>95.84%</td>
+</tr>
+<tr>
+<td>InfoNCE (ResNet-50)</td>
+<td>99.55%</td>
+<td>99.59%</td>
+<td>87.89%</td>
+</tr>
+<tr>
+<td>ArcFace + InfoNCE (ResNet-50)</td>
+<td>99.72%</td>
+<td>99.73%</td>
+<td>95.30%</td>
+</tr>
+<tr>
+<td><strong>CLIP ViT-B/32 (frozen)</strong></td>
+<td><strong>68.35%</strong></td>
+<td><strong>69.01%</strong></td>
+<td><strong>56.69%</strong></td>
+</tr>
+<tr>
+<td><strong>DINOv2 ViT-B/14 (frozen)</strong></td>
+<td><strong>57.85%</strong></td>
+<td><strong>51.39%</strong></td>
+<td><strong>50.43%</strong></td>
+</tr>
+<tr>
+<td><strong>I-JEPA ViT-H/14 (frozen)</strong></td>
+<td><strong>52.57%</strong></td>
+<td><strong>51.64%</strong></td>
+<td><strong>50.13%</strong></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3 id="lora-adaptation-of-foundation-models" dir="auto">LoRA adaptation of foundation models</h3>
+<p dir="auto">LoRA (rank=8, &lt;1% trainable params) with InfoNCE recovers foundation models to 89–96% LFW. DINOv2 leads on CFP-FF (96.81%), but all remain well below ResNet-50 trained from scratch. Config: <code class="notranslate">configs/clip-lora.yaml</code>, <code class="notranslate">configs/dino-lora.yaml</code>, <code class="notranslate">configs/jepa-lora.yaml</code></p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Experiment</th>
+<th>LFW</th>
+<th>CFP-FF</th>
+<th>CFP-FP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ArcFace (ResNet-50)</td>
+<td>99.72%</td>
+<td>99.80%</td>
+<td>95.84%</td>
+</tr>
+<tr>
+<td>InfoNCE (ResNet-50)</td>
+<td>99.55%</td>
+<td>99.59%</td>
+<td>87.89%</td>
+</tr>
+<tr>
+<td>ArcFace + InfoNCE (ResNet-50)</td>
+<td>99.72%</td>
+<td>99.73%</td>
+<td>95.30%</td>
+</tr>
+<tr>
+<td>CLIP ViT-B/32 (frozen)</td>
+<td>68.35%</td>
+<td>69.01%</td>
+<td>56.69%</td>
+</tr>
+<tr>
+<td>DINOv2 ViT-B/14 (frozen)</td>
+<td>57.85%</td>
+<td>51.39%</td>
+<td>50.43%</td>
+</tr>
+<tr>
+<td>I-JEPA ViT-H/14 (frozen)</td>
+<td>52.57%</td>
+<td>51.64%</td>
+<td>50.13%</td>
+</tr>
+<tr>
+<td><strong>CLIP ViT-B/32 + LoRA</strong></td>
+<td><strong>96.08%</strong></td>
+<td><strong>89.79%</strong></td>
+<td><strong>72.24%</strong></td>
+</tr>
+<tr>
+<td><strong>DINOv2 ViT-B/14 + LoRA</strong></td>
+<td><strong>94.78%</strong></td>
+<td><strong>96.81%</strong></td>
+<td><strong>78.50%</strong></td>
+</tr>
+<tr>
+<td><strong>I-JEPA ViT-H/14 + LoRA</strong></td>
+<td><strong>89.12%</strong></td>
+<td><strong>89.57%</strong></td>
+<td><strong>72.73%</strong></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3 id="embedding-space-analysis" dir="auto">Embedding space analysis</h3>
+<p dir="auto">I wondered — ArcFace trains a classifier over 85K identities and discards it at inference. How does it generalize to unseen faces?</p>
+<p dir="auto">ArcFace’s final layer is a matrix of 85,741 L2-normalized class centers. During training, each embedding is pushed toward its own class center on the hypersphere. A well-trained model maps every training image close to one of these centers. But when an unseen identity is fed through the frozen model, will it also land close to a class center?</p>
+<p dir="auto">To test this, I took the positive pairs from LFW, CFP-FF, and CFP-FP and measured two things: (a) the cosine similarity between the two images in a pair, and (b) the cosine similarity between each image and its nearest class center. These results assume MS1M-ArcFace and the evaluation datasets are identity-disjoint.</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Loss</th>
+<th>Benchmark</th>
+<th>Pair sim</th>
+<th>Nearest center sim (A)</th>
+<th>Nearest center sim (B)</th>
+<th>% A closer to center</th>
+<th>% B closer to center</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ArcFace</td>
+<td>LFW</td>
+<td>0.714</td>
+<td>0.630</td>
+<td>0.631</td>
+<td>43.3%</td>
+<td>44.8%</td>
+</tr>
+<tr>
+<td>ArcFace</td>
+<td>CFP-FF</td>
+<td>0.711</td>
+<td>0.725</td>
+<td>0.727</td>
+<td>65.6%</td>
+<td>66.4%</td>
+</tr>
+<tr>
+<td>ArcFace</td>
+<td>CFP-FP</td>
+<td>0.515</td>
+<td>0.726</td>
+<td>0.573</td>
+<td>90.2%</td>
+<td>77.1%</td>
+</tr>
+<tr>
+<td>ArcFace+InfoNCE</td>
+<td>LFW</td>
+<td>0.776</td>
+<td>0.676</td>
+<td>0.678</td>
+<td>33.9%</td>
+<td>35.3%</td>
+</tr>
+<tr>
+<td>ArcFace+InfoNCE</td>
+<td>CFP-FF</td>
+<td>0.780</td>
+<td>0.767</td>
+<td>0.769</td>
+<td>53.3%</td>
+<td>53.1%</td>
+</tr>
+<tr>
+<td>ArcFace+InfoNCE</td>
+<td>CFP-FP</td>
+<td>0.589</td>
+<td>0.769</td>
+<td>0.617</td>
+<td>89.7%</td>
+<td>65.2%</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">On LFW (easy, frontal), positive pairs are closer to each other than to any class center — generalization works as expected. On CFP-FP (pose variation), the picture flips: the frontal face snaps to a nearby class center (0.73) while the profile face drifts further (0.57), and pair similarity drops to 0.52. 90% of frontal faces are closer to a training class center than to their profile pair partner. The model leans on the class-center geometry learned during training, which breaks under pose variation. Script: <code class="notranslate">scripts/analyze_center_vs_positive.py</code></p>
+<h2 id="background" dir="auto">Background</h2>
+<p dir="auto">Face verification determines whether two face images belong to the same person — a pairwise similarity problem.</p>
+<p dir="auto"><strong>FaceNet</strong> (Schroff et al., CVPR 2015) was the first to frame it this way: triplet loss maps faces to a compact Euclidean space, and the embedding is used directly at inference. However, triplet mining is slow and unstable at scale.</p>
+<p dir="auto"><strong>Margin-based losses</strong> — SphereFace (Liu et al., CVPR 2017), CosFace (Wang et al., CVPR 2018), ArcFace (Deng et al., CVPR 2019) — reframe verification as multi-class classification during training. A softmax head over identity classes is added, angular margins enforce inter-class separation, and the classification head is discarded at inference. This indirect approach became the dominant paradigm.</p>
+<p dir="auto"><strong>CoReFace</strong> (Song &amp; Wang, Pattern Recognition 2024) is the closest prior work. It adds contrastive regularization on top of margin-based classification to align training with pairwise evaluation. However, contrastive learning serves as a <em>regularizer</em> — the classification head remains the primary signal. This project asks: what happens when contrastive loss is the <em>only</em> signal?</p>
+<h2 id="future-work" dir="auto">Future work</h2>
+<p dir="auto">I invite you, dear reader, to pick up where this project leaves off:</p>
+<p dir="auto"><strong>Embedding space geometry.</strong> Do InfoNCE embeddings truly avoid the class-center snapping observed with ArcFace? Do unseen identities distribute more freely across the hypersphere, or does a different kind of clustering emerge? For ArcFace, do both images in a positive pair snap to the <em>same</em> nearest center or to different ones — and how does this correlate with verification accuracy?</p>
+<p dir="auto"><strong>Larger batch sizes.</strong> The CFP-FP gap may largely be a supervision asymmetry. Scaling batch size is the most natural next step — just increase <code class="notranslate">batch_size</code> in <code class="notranslate">configs/nce.yaml</code> and retrain.</p>
+<p dir="auto"><strong>Dataset overlap.</strong> The embedding space analysis assumes MS1M-ArcFace and the evaluation benchmarks are identity-disjoint. Verifying this — and quantifying any overlap — is needed to validate those results.</p>
+<h2 id="experimental-setting" dir="auto">Experimental setting</h2>
+<ul dir="auto">
+<li><strong>Training data</strong>: MS1M-ArcFace, 85,741 identities, 80/20 train/val split</li>
+<li><strong>Hardware</strong>: 2× H100 GPUs (ComputeCanada), <code class="notranslate">accelerate</code> distributed, FP16 mixed precision</li>
+<li><strong>Evaluation</strong>: LFW, CFP-FF, CFP-FP — 10-fold cross-validation at FAR@0.001</li>
+<li><strong>Losses</strong>: All embeddings L2-normalized. ArcFace: scale <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">32</span></span></span></span>, margin <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.2</span></span></span></span>, denominator over all 85,741 class centers. InfoNCE: temperature <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.1132em;">τ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.07</span></span></span></span>, denominator over <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord">2</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span></span></span></span> batch negatives (1,448 for ResNet, up to 4,098 for CLIP-LoRA)</li>
+<li><strong>ResNet-50 experiments</strong>: SGD (momentum 0.9, WD 5e-4), LR 0.1, 5 warmup epochs, 30 total epochs, batch size 1,350–1,450</li>
+<li><strong>LoRA experiments</strong>: rank=8, α=8 on FFN layers. SGD LR 0.001, 15 epochs, batch size varies (120–4,100 depending on model size)</li>
+<li><strong>Frozen baselines</strong>: zero-shot evaluation only (no training)</li>
+</ul>
+<p dir="auto">All results reproducible via config files in <code class="notranslate">configs/</code>:</p>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">accelerate launch train.py --config <span class="pl-k">&lt;</span>config_name<span class="pl-k">&gt;</span></pre></div>
+<h2 id="setup" dir="auto">Setup</h2>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">conda env create -f environment.yaml
+conda activate face-verification
+cp .env.example .env  <span class="pl-c"><span class="pl-c">#</span> fill in your dataset paths and HPC credentials</span></pre></div>
+<h2 id="data" dir="auto">Data</h2>
+<h3 id="ms1m-arcface-training" dir="auto">MS1M-ArcFace (training)</h3>
+<ol dir="auto">
+<li>Download from Kaggle: <a href="https://www.kaggle.com/datasets/jadesag3/ms1m-arcface/data" rel="nofollow">https://www.kaggle.com/datasets/jadesag3/ms1m-arcface/data</a></li>
+<li>Extract — you need <code class="notranslate">train.rec</code> and <code class="notranslate">train.idx</code> (RecordIO format).</li>
+<li>Set <code class="notranslate">MS1M_DIR</code> in <code class="notranslate">.env</code> to the extracted folder.</li>
+</ol>
+<p dir="auto"><code class="notranslate">train.py</code> automatically converts RecordIO to LMDB on first run.</p>
+<h3 id="lfw-evaluation" dir="auto">LFW (evaluation)</h3>
+<p dir="auto">No manual download needed. <code class="notranslate">train.py</code> auto-downloads LFW from figshare, runs RetinaFace alignment, and caches the result as <code class="notranslate">data/lfw_10fold_original_retinaface.lmdb</code>.</p>
+<h3 id="cfp-evaluation" dir="auto">CFP (evaluation)</h3>
+<p dir="auto">Download from Kaggle: <a href="https://www.kaggle.com/datasets/chinafax/cfpw-dataset" rel="nofollow">https://www.kaggle.com/datasets/chinafax/cfpw-dataset</a> and extract to <code class="notranslate">data/cfp-dataset/</code>. LMDBs are prepared automatically on first run.</p>
+<h2 id="run" dir="auto">Run</h2>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">accelerate launch train.py --config arc</pre></div>
+<h2 id="slurm-cluster" dir="auto">SLURM cluster</h2>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">sbatch hpc/_requirements_installation.sh   <span class="pl-c"><span class="pl-c">#</span> one-time env setup</span>
+<span class="pl-c1">cd</span> hpc <span class="pl-k">&amp;&amp;</span> bash _download_models.sh          <span class="pl-c"><span class="pl-c">#</span> pre-download weights (login node, has internet)</span>
+sbatch hpc/arc.sh                           <span class="pl-c"><span class="pl-c">#</span> submit training job</span></pre></div>
+<h2 id="acknowledgments" dir="auto">Acknowledgments</h2>
+<p dir="auto">This research was enabled in part by support provided by the Digital Research Alliance of Canada (<a href="https://alliancecan.ca" rel="nofollow">alliancecan.ca</a>).</p></article><p class="rtop"><a class="btn" href="https://github.com/enazari/ArcFace-vs-InfoNCE">View on GitHub</a></p></div></div></main>
+</body></html>
